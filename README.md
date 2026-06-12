@@ -7,7 +7,8 @@
 - **Weighted Role Dictionaries (`WEIGHT_DICTIONARIES`)** — Each role keyword includes severity (`red` / `yellow`) and human-readable legal/policy reasons.
 - **Two-Tier Risk Highlighting with Traceable IDs** — Every flagged match is wrapped with a unique `data-id`, plus `data-keyword` / `data-severity` metadata.
 - **Smart Recommendations + Reasoning** — Hover or click any flagged word to see severity status, legal/policy rationale, and Creative/Conservative alternatives.
-- **Human-in-the-Loop Override** — `[Ignore & Whitelist 🐾]` marks only that specific flag as Human Overridden, updates live metrics, and prevents future re-flagging.
+- **Immersive Human-in-the-Loop Override** — Click/hover any flagged token to open a regulatory-card popover and apply `[🐾 Override & Ingest to Whitelist]`.
+- **Phase 3 Remediation Matrix** — Live toggle pills let reviewers whitelist or restore flagged items while counters stay synchronized.
 - **3-Path AI Optimization Generator** — `【✨ Optimize & Polish Document】` produces parallel Creative, Conservative, and Check-A-Paw delivery variants.
 - **Independent Copy Per Variant** — Each optimization tab has its own copy button with `✅ Copied!` success state.
 - **Shiba Inu State Machine** — A delightful anime pup avatar guides you through every phase with contextual dialogue.
@@ -35,5 +36,5 @@
 |-------|-------------|
 | **1 — Ingestion & Context Filtering** | Choose your role tag to activate the right compliance dictionary. |
 | **2 — Context-Aware Inspection** | The engine scans your text and highlights every flagged keyword by severity tier. |
-| **3 — Rectification & HITL Feedback** | Hover flagged words for Creative/Conservative suggestions, or override to whitelist. |
-| **4 — Final Synthesis & Safe Generation** | Purify the document, compare side-by-side, and copy the clean version for legal hand-off. |
+| **3 — Rectification & HITL Feedback** | Use the remediation matrix and inline cards to whitelist/restore each flagged item in real time. |
+| **4 — Final Synthesis & Safe Generation** | Generate three parallel safe paths (Creative / Conservative / Check-A-Paw) with independent copy actions. |
