@@ -102,19 +102,19 @@
         </p>
       </div>
 
-      <!-- Live Stats Ticker — updates in real time -->
+      <!-- Live HITL Metrics — updates in real time -->
       <div class="flex gap-3">
         <div class="bg-red-50 border border-red-200 rounded-2xl px-4 py-2 text-center min-w-16">
-          <div id="stat-critical" class="text-xl font-extrabold text-red-500">0</div>
-          <div class="text-xs text-red-400 font-medium">Critical</div>
+          <div id="stat-active-flags" class="text-xl font-extrabold text-red-500">0</div>
+          <div class="text-xs text-red-400 font-medium">Active Flags</div>
         </div>
         <div class="bg-yellow-50 border border-yellow-200 rounded-2xl px-4 py-2 text-center min-w-16">
-          <div id="stat-warnings" class="text-xl font-extrabold text-yellow-500">0</div>
-          <div class="text-xs text-yellow-400 font-medium">Warnings</div>
+          <div id="stat-overridden" class="text-xl font-extrabold text-yellow-500">0</div>
+          <div class="text-xs text-yellow-400 font-medium">Overridden Rules</div>
         </div>
         <div class="bg-green-50 border border-green-200 rounded-2xl px-4 py-2 text-center min-w-16">
-          <div id="stat-overridden" class="text-xl font-extrabold text-green-500">0</div>
-          <div class="text-xs text-green-400 font-medium">Overridden</div>
+          <div id="stat-kb-synced" class="text-xl font-extrabold text-green-500">0</div>
+          <div class="text-xs text-green-400 font-medium">Knowledge Base Synced</div>
         </div>
       </div>
     </div>
@@ -205,37 +205,17 @@
       </div>
 
 
-      <!-- ─── PHASE 4 — Purification Controls (revealed after scan) ── -->
+      <!-- ─── PHASE 4 — AI Optimization Controls (revealed after scan) ── -->
       <div id="purify-section" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
         <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">
-          Phase 4 — Final Synthesis
+          Phase 4 — AI Optimization (AI优化)
         </h2>
-
-        <!-- Export-path toggle: choose Creative or Conservative replacement style -->
-        <div class="flex gap-2 mb-4">
-          <button
-            id="btn-creative"
-            class="export-tab tab-active flex-1 text-xs font-semibold py-2 px-3 rounded-xl
-                   border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all"
-            onclick="setExportPath('creative')">
-            🎨 Creative Path
-          </button>
-          <button
-            id="btn-conservative"
-            class="export-tab flex-1 text-xs font-semibold py-2 px-3 rounded-xl
-                   border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all"
-            onclick="setExportPath('conservative')">
-            ⚖️ Conservative Path
-          </button>
-        </div>
-
-        <!-- Trigger side-by-side compare & replacement rendering -->
         <button
-          onclick="purifyDocument()"
+          onclick="optimizeAndPolish()"
           class="w-full bg-gradient-to-r from-amber-400 to-amber-500
                  hover:from-amber-500 hover:to-amber-600
                  text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
-          ✨ Purify Document
+          【✨ Optimize &amp; Polish Document】
         </button>
       </div>
 
@@ -295,59 +275,48 @@
         <!-- Legend -->
         <div class="flex gap-3 mt-3 flex-wrap">
           <span class="text-xs bg-red-100 text-red-700 font-bold px-2 py-1 rounded border border-red-200">
-            🔴 Critical — hover to fix
+            🔴 Critical — hover/click to review
           </span>
           <span class="text-xs bg-yellow-100 text-yellow-700 font-bold px-2 py-1 rounded border border-yellow-200">
-            🟡 Warning — hover to fix
+            🟡 Warning — hover/click to review
           </span>
-          <span class="text-xs bg-green-100 text-green-700 font-bold px-2 py-1 rounded border border-green-200">
-            ✅ Overridden — whitelisted
+          <span class="text-xs bg-green-50 text-green-700 font-bold px-2 py-1 rounded border border-green-200">
+            ✅ Human Overridden — whitelisted
           </span>
         </div>
       </div>
 
 
-      <!-- ─── Phase 4 Output — Side-by-Side Compare ─────────── -->
+      <!-- ─── Phase 4 Output — Multi-Tab Parallel Delivery ───── -->
       <!--
-        Hidden until the user clicks "Purify Document".
-        Shows original vs. cleansed text side by side.
+        Hidden until the user clicks "Optimize & Polish Document".
+        Shows three polished text paths with independent copy actions.
       -->
-      <div id="compare-panel" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+      <div id="optimize-panel" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
         <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">
-          Phase 4 — Side-by-Side Compare
+          Phase 4 — Parallel Safe Delivery
         </h2>
 
-        <div class="grid grid-cols-2 gap-3 mb-4">
-          <!-- Original text column -->
-          <div>
-            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-              📄 Original
-            </h3>
-            <div id="compare-original"
-                 class="compare-area text-xs text-gray-600 leading-relaxed p-3
-                        bg-red-50 rounded-xl border border-red-100">
-            </div>
-          </div>
-
-          <!-- Cleansed text column -->
-          <div>
-            <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-              ✨ Cleansed
-            </h3>
-            <div id="compare-cleansed"
-                 class="compare-area text-xs text-gray-700 leading-relaxed p-3
-                        bg-green-50 rounded-xl border border-green-100">
-            </div>
-          </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-4">
+          <button id="tab-creative" onclick="setOptimizationTab('creative')" class="export-tab tab-active text-xs font-semibold py-2 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all">🎨 The Creative Path</button>
+          <button id="tab-conservative" onclick="setOptimizationTab('conservative')" class="export-tab text-xs font-semibold py-2 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all">⚖️ The Conservative Path</button>
+          <button id="tab-checkapaw" onclick="setOptimizationTab('checkapaw')" class="export-tab text-xs font-semibold py-2 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all">🐱 The Check-A-Paw Path</button>
         </div>
 
-        <!-- Copy to clipboard — fires success approval toast -->
-        <button
-          onclick="copySafeVersion()"
-          class="w-full bg-green-500 hover:bg-green-600 active:bg-green-700
-                 text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
-          📋 Copy Safe Version
-        </button>
+        <div class="mb-4">
+          <div id="opt-content-creative" class="optimization-content">
+            <div class="compare-area text-xs text-gray-700 leading-relaxed p-3 bg-purple-50 rounded-xl border border-purple-100" id="opt-text-creative"></div>
+            <button id="copy-creative" onclick="copyOptimizedVersion('creative')" class="mt-3 w-full bg-purple-500 hover:bg-purple-600 text-white font-bold py-2.5 rounded-2xl transition-all text-sm">📋 Copy This Version</button>
+          </div>
+          <div id="opt-content-conservative" class="optimization-content hidden">
+            <div class="compare-area text-xs text-gray-700 leading-relaxed p-3 bg-blue-50 rounded-xl border border-blue-100" id="opt-text-conservative"></div>
+            <button id="copy-conservative" onclick="copyOptimizedVersion('conservative')" class="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2.5 rounded-2xl transition-all text-sm">📋 Copy This Version</button>
+          </div>
+          <div id="opt-content-checkapaw" class="optimization-content hidden">
+            <div class="compare-area text-xs text-gray-700 leading-relaxed p-3 bg-green-50 rounded-xl border border-green-100" id="opt-text-checkapaw"></div>
+            <button id="copy-checkapaw" onclick="copyOptimizedVersion('checkapaw')" class="mt-3 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-2xl transition-all text-sm">📋 Copy This Version</button>
+          </div>
+        </div>
       </div>
 
     </div><!-- /RIGHT PANE -->
@@ -369,68 +338,59 @@
   // ──────────────────────────────────────────────────────────
 
   let activeRole        = null;        // 'marketing' | 'pm' | 'policy'
-  let exportPath        = 'creative';  // 'creative' | 'conservative'
   let whitelist         = new Set();   // Words the user has whitelisted (overridden)
   let overrideCount     = 0;           // Running tally of overridden flags
-  let criticalCount     = 0;           // Current number of red (critical) flags
-  let warningCount      = 0;           // Current number of yellow (warning) flags
+  let activeFlagCount   = 0;           // Current number of non-overridden active flags
+  let knowledgeSynced   = 0;           // Simulated number of synced rules in the local KB
   let lastScanOriginal  = '';          // Raw original text from last scan (for purification)
   let popoverHideTimer  = null;        // Timeout handle to delay popover hide
   let currentKeyword    = null;        // Keyword the popover is currently showing
+  let currentFlagId     = null;        // data-id of the flag currently shown in popover
+  let optimizationTab   = 'creative';  // Which optimization tab is visible
+  let optimizedOutputs  = { creative: '', conservative: '', checkapaw: '' }; // Last generated outputs
 
 
   // ──────────────────────────────────────────────────────────
-  // KEYWORD DICTIONARIES
+  // WEIGHTED CONTEXTUAL DICTIONARIES
   //
-  // Each role has two tiers of keywords:
-  //   critical → red highlights (serious compliance breaches)
-  //   warning  → yellow highlights (tone/context risks)
+  // This object is the heart of Optimization 1. Each role maps keyword
+  // phrases to an object with:
+  //   - severity: "red" (critical) or "yellow" (contextual warning)
+  //   - reason: plain-language legal/policy rationale shown to humans
   //
-  // The "base" dictionary applies to every role scan.
-  // Keywords are matched case-insensitively by the engine.
+  // IMPORTANT: The required canonical entries requested by product are
+  // preserved exactly and can be safely extended with realistic extras.
   // ──────────────────────────────────────────────────────────
 
-  const DICTIONARIES = {
-
-    // Shared base — always active regardless of role
-    base: {
-      critical: ['fraud', 'illegal', 'banned substance'],
-      warning:  ['promise', 'guaranteed results']
-    },
-
-    // Tag A — Marketing: aggressive commercial claims
+  const WEIGHT_DICTIONARIES = {
     marketing: {
-      critical: [
-        '100% guaranteed', 'miracle', 'risk-free',
-        'cheapest', 'best in class', 'number one', 'number 1'
-      ],
-      warning: [
-        'best', 'fastest', 'unbeatable', 'amazing results',
-        'instant results', 'effortless', 'overnight results'
-      ]
+      'best':                { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
+      'no.1':                { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
+      'top-tier':            { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
+      '100% guaranteed':     { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
+      'risk-free':           { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
+      'permanent':           { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
+      'officially certified':{ severity: 'yellow', reason: 'Requires strict institutional credentials.' },
+      'government approved': { severity: 'yellow', reason: 'Requires strict institutional credentials.' },
+      'best in class':       { severity: 'yellow', reason: 'Requires substantiation to avoid misleading comparative claims.' },
+      'miracle':             { severity: 'yellow', reason: 'May imply unsubstantiated efficacy in regulated messaging.' }
     },
-
-    // Tag B — Product Manager: data-privacy & consumer vulnerability issues
     pm: {
-      critical: [
-        'track user', 'sell data', 'without consent',
-        'location tracking', 'harvest data'
-      ],
-      warning: [
-        'save credentials', 'collect data', 'monitor',
-        'behavioral tracking', 'user profiling'
-      ]
+      'track user location':               { severity: 'red',    reason: 'Severe GDPR/CCPA privacy violation.' },
+      'collect data without consent':      { severity: 'red',    reason: 'Severe GDPR/CCPA privacy violation.' },
+      'save user credentials in plaintext':{ severity: 'red',    reason: 'Critical data security threat.' },
+      '100% bug-free':                     { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' },
+      'instant loading':                   { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' },
+      'track user':                        { severity: 'yellow', reason: 'Privacy-sensitive tracking language requires explicit disclosure.' },
+      'save credentials':                  { severity: 'yellow', reason: 'Security controls and encryption commitments must be explicit.' }
     },
-
-    // Tag C — Policy: sensitive political/qualitative tone markers
     policy: {
-      critical: [
-        'regime', 'propaganda', 'censorship', 'total ban', 'absolute ban'
-      ],
-      warning: [
-        'massive crackdown', 'extremist', 'radical',
-        'controversial', 'contested claims'
-      ]
+      'massive crackdown':         { severity: 'red',    reason: 'Aggressive, politically sensitive qualitative phrasing.' },
+      'total ban':                 { severity: 'red',    reason: 'Aggressive, politically sensitive qualitative phrasing.' },
+      'completely overhaul':       { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
+      'destroy market competitors':{ severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
+      'regime':                    { severity: 'yellow', reason: 'Potentially inflammatory geopolitical framing in public communication.' },
+      'propaganda':                { severity: 'yellow', reason: 'Highly charged rhetoric that may escalate reputational risk.' }
     }
   };
 
@@ -606,8 +566,18 @@
     },
     overrideTriggered: {
       emoji:    '💡🐕',
-      dialogue: 'Understood hooman! Knowledge Base updated. Learning this exception!',
+      dialogue: '💡🐕 "Got it! Human feedback recorded. I am getting smarter!"',
       badge:    'Override Triggered'
+    },
+    roleSelected: {
+      emoji:    '🐕',
+      dialogue: '🐕 "Understood! Loading the specific dictionary database for you!"',
+      badge:    'Role Context Loaded'
+    },
+    polished: {
+      emoji:    '🎉🐕',
+      dialogue: '🎉🐕 "Ta-da! The final delivery options are ready. Pick your favorite safe path!"',
+      badge:    'Multi-Option Delivery Ready'
     },
     purified: {
       emoji:    '🎉🐕',
@@ -657,35 +627,26 @@
       policy:    '⚖️ Policy mode active — scanning for sensitive political tone, qualitative extremes, and inflammatory language.'
     };
     document.getElementById('role-description').textContent = descriptions[role] || '';
+    setShibaState('roleSelected');
   }
 
 
   // ══════════════════════════════════════════════════════════
   // FUNCTION: getActiveDictionary()
   //
-  // Returns the merged keyword dictionary for the current scan:
-  //   base keywords + the active-role keywords.
-  // Words already in the whitelist are excluded, so overridden
-  // words are never flagged again on a subsequent re-scan.
+  // Returns only the active role dictionary (Optimization 1 requirement)
+  // with any user-whitelisted keywords removed.
   // ══════════════════════════════════════════════════════════
   function getActiveDictionary() {
-    // Clone the base so we never mutate the source object
-    const merged = {
-      critical: [...DICTIONARIES.base.critical],
-      warning:  [...DICTIONARIES.base.warning]
-    };
+    const roleDictionary = WEIGHT_DICTIONARIES[activeRole] || {};
+    const filtered = {};
 
-    // Layer in the role-specific keywords if a role is selected
-    if (activeRole && DICTIONARIES[activeRole]) {
-      merged.critical.push(...DICTIONARIES[activeRole].critical);
-      merged.warning.push(...DICTIONARIES[activeRole].warning);
-    }
+    Object.entries(roleDictionary).forEach(([keyword, meta]) => {
+      if (whitelist.has(keyword.toLowerCase())) return;
+      filtered[keyword] = meta;
+    });
 
-    // Strip out whitelisted words (case-insensitive comparison)
-    merged.critical = merged.critical.filter(w => !whitelist.has(w.toLowerCase()));
-    merged.warning  = merged.warning.filter(w => !whitelist.has(w.toLowerCase()));
-
-    return merged;
+    return filtered;
   }
 
 
@@ -712,45 +673,32 @@
   // Phase 2 — Core inspection engine.
   //
   // Strategy:
-  //  1. Collect ALL keyword match positions (start / end index)
-  //     for both critical and warning tiers.
-  //  2. Sort matches by start position; discard overlapping ones
-  //     (longest-first prevents a sub-phrase shadowing a longer phrase).
-  //  3. Walk through the escaped text once, inserting the coloured
-  //     <span> elements around each match.
+  //  1. Collect all role-relevant keyword matches with severity + reason.
+  //  2. Resolve overlap conflicts longest-first.
+  //  3. Inject highlighted spans with unique data-id markers and metadata.
   //
-  // Operates on the already HTML-escaped text to avoid double-escaping.
-  // Returns an HTML string safe to inject via innerHTML.
-  // Side-effect: updates criticalCount and warningCount globals.
+  // Operates on already escaped text to preserve XSS safety.
   // ══════════════════════════════════════════════════════════
   function highlightText(escapedText, dictionary) {
-    // Step 1 — collect every match position
     const matches = [];
-
-    // Helper: escape regex metacharacters inside a keyword string
     const reEscape = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    let flagId = 0;
 
-    const allEntries = [
-      ...dictionary.critical.map(k => ({ word: k, tier: 'critical' })),
-      ...dictionary.warning.map(k  => ({ word: k, tier: 'warning'  }))
-    ];
-
-    allEntries.forEach(({ word, tier }) => {
-      const regex = new RegExp(reEscape(word), 'gi');
+    Object.entries(dictionary).forEach(([keyword, meta]) => {
+      const regex = new RegExp(reEscape(keyword), 'gi');
       let m;
       while ((m = regex.exec(escapedText)) !== null) {
         matches.push({
           start:    m.index,
           end:      m.index + m[0].length,
-          original: m[0],   // preserves the user's original casing
-          word:     word,   // lowercase canonical key for lookup
-          tier:     tier
+          original: m[0],
+          keyword:  keyword.toLowerCase(),
+          severity: meta.severity,
+          reason:   meta.reason
         });
       }
     });
 
-    // Step 2 — sort by start position, then remove overlaps
-    // (first match wins; if two start at the same position, the longer one wins)
     matches.sort((a, b) => a.start - b.start || b.end - a.end);
 
     const nonOverlapping = [];
@@ -762,36 +710,28 @@
       }
     });
 
-    // Step 3 — build the HTML string by splicing spans into the escaped text
     let html = '';
-    let pos  = 0;
-    let crit = 0;
-    let warn = 0;
+    let pos = 0;
 
     nonOverlapping.forEach(m => {
-      // Append unmodified text before this match
       html += escapedText.slice(pos, m.start);
 
-      // Choose tier-specific classes
-      if (m.tier === 'critical') {
-        crit++;
+      if (m.severity === 'red') {
         html += `<span class="bg-red-100 text-red-700 font-bold px-1 rounded mx-0.5 border border-red-200 cursor-pointer flagged-word" `
-              + `data-keyword="${escapeHtml(m.word.toLowerCase())}" data-tier="critical">${m.original}</span>`;
+              + `data-id="flag-${flagId}" data-keyword="${escapeHtml(m.keyword)}" data-severity="red" `
+              + `data-reason="${escapeHtml(m.reason)}">${m.original}</span>`;
       } else {
-        warn++;
         html += `<span class="bg-yellow-100 text-yellow-700 font-bold px-1 rounded mx-0.5 border border-yellow-200 cursor-pointer flagged-word" `
-              + `data-keyword="${escapeHtml(m.word.toLowerCase())}" data-tier="warning">${m.original}</span>`;
+              + `data-id="flag-${flagId}" data-keyword="${escapeHtml(m.keyword)}" data-severity="yellow" `
+              + `data-reason="${escapeHtml(m.reason)}">${m.original}</span>`;
       }
+      flagId += 1;
 
       pos = m.end;
     });
 
-    // Append any remaining unmodified text after the last match
     html += escapedText.slice(pos);
-
-    // Update global counters for the stats ticker
-    criticalCount = crit;
-    warningCount  = warn;
+    activeFlagCount = nonOverlapping.length;
 
     return html;
   }
@@ -855,16 +795,17 @@
       // Update the live stats ticker
       updateStats();
 
-      // Wire up hover listeners on every flagged span
+      // Wire up hover + click listeners on every flagged span
       attachPopoverListeners();
 
-      // Reveal the Phase 4 purification controls
+      // Reveal the Phase 4 optimization controls
       document.getElementById('purify-section').classList.remove('hidden');
 
       // Transition Shiba to the state that reflects the scan result
-      if (criticalCount > 0) {
+      const redFlags = document.querySelectorAll('.flagged-word[data-severity="red"]').length;
+      if (redFlags > 0) {
         setShibaState('criticalBlock');
-      } else if (warningCount > 0) {
+      } else if (activeFlagCount > 0) {
         setShibaState('risksFound');
       } else {
         // No flags at all — immediately compliant!
@@ -885,14 +826,15 @@
   // ══════════════════════════════════════════════════════════
   function attachPopoverListeners() {
     document.querySelectorAll('.flagged-word').forEach(span => {
-
-      span.addEventListener('mouseenter', () => {
+      const openPopover = () => {
         clearTimeout(popoverHideTimer); // Cancel any pending hide
-        const keyword = span.dataset.keyword;
-        const tier    = span.dataset.tier;
-        currentKeyword = keyword;       // Store for the override button
-        showPopover(keyword, tier, span);
-      });
+        currentKeyword = span.dataset.keyword;
+        currentFlagId  = span.dataset.id;
+        showPopover(span.dataset.keyword, span.dataset.severity, span.dataset.reason, span.dataset.id, span);
+      };
+
+      span.addEventListener('mouseenter', openPopover);
+      span.addEventListener('click', openPopover);
 
       span.addEventListener('mouseleave', () => {
         // Short delay so user can hover onto the popover itself
@@ -908,9 +850,9 @@
   // Positions and reveals the global popover element near the
   // hovered flagged-word span. Populates it with buildPopover().
   // ══════════════════════════════════════════════════════════
-  function showPopover(keyword, tier, targetSpan) {
+  function showPopover(keyword, severity, reason, flagId, targetSpan) {
     const popover = document.getElementById('popover-box');
-    document.getElementById('popover-content').innerHTML = buildPopover(keyword, tier);
+    document.getElementById('popover-content').innerHTML = buildPopover(keyword, severity, reason, flagId);
 
     // Position above the span using viewport-relative coords (fixed positioning)
     const rect = targetSpan.getBoundingClientRect();
@@ -956,12 +898,12 @@
   // Shows the tier badge, the flagged keyword, both recommendation
   // paths (Creative + Conservative), and the Override button.
   // ══════════════════════════════════════════════════════════
-  function buildPopover(keyword, tier) {
+  function buildPopover(keyword, severity, reason, flagId) {
     // Look up suggestions; fall back to the generic entry if not found
     const suggestions = SUGGESTIONS[keyword] || SUGGESTIONS['_fallback'];
 
-    const tierLabel = tier === 'critical' ? '🔴 Critical Risk'  : '🟡 Tone Warning';
-    const tierCls   = tier === 'critical'
+    const tierLabel = severity === 'red' ? '🔴 Red / Critical'  : '🟡 Yellow / Contextual';
+    const tierCls   = severity === 'red'
       ? 'text-red-600 bg-red-50 border-red-200'
       : 'text-yellow-600 bg-yellow-50 border-yellow-200';
 
@@ -970,8 +912,11 @@
       <div class="text-xs font-bold ${tierCls} border px-2 py-1 rounded-lg mb-3 inline-block">
         ${tierLabel}
       </div>
-      <p class="text-xs text-gray-500 mb-3">
+      <p class="text-xs text-gray-500 mb-2">
         Flagged: <strong class="text-gray-800">"${escapeHtml(keyword)}"</strong>
+      </p>
+      <p class="text-xs text-gray-600 mb-3 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1.5 leading-relaxed">
+        ${escapeHtml(reason || 'Context-sensitive language requires reviewer validation.')}
       </p>
 
       <div class="mb-2">
@@ -991,72 +936,53 @@
       <button
         class="w-full text-xs font-bold bg-green-500 hover:bg-green-600 active:bg-green-700
                text-white py-2 px-3 rounded-xl transition-all shadow-sm"
-        onclick="overrideWord(currentKeyword)">
-        Override / Add to Whitelist 🐾
+        onclick="overrideWord('${flagId}')">
+        [Ignore &amp; Whitelist 🐾]
       </button>
     `;
   }
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: overrideWord(keyword)
+  // FUNCTION: overrideWord(flagId)
   //
   // Phase 3, Step B — Human-in-the-Loop override / whitelist flow:
   //
-  //  1. Adds the keyword to the in-memory whitelist (Set).
-  //  2. Finds every flagged span for that keyword in the output.
-  //  3. Replaces red/yellow styling with the "approved" green style.
-  //  4. Removes the hover listeners (by cloning the nodes).
-  //  5. Adjusts the critical/warning counters downward.
-  //  6. Increments the Overridden counter.
-  //  7. Fires the "knowledge base self-corrected" toast.
-  //  8. Transitions Shiba to 'overrideTriggered', then returns to
-  //     whichever risk state still applies.
+  //  1. Targets exactly one flagged span via its unique data-id.
+  //  2. Adds that span's keyword into the whitelist Set.
+  //  3. Converts only that flag into a green human-overridden marker.
+  //  4. Updates counters + toast + Shiba state transitions.
   // ══════════════════════════════════════════════════════════
-  function overrideWord(keyword) {
-    if (!keyword) return;
+  function overrideWord(flagId) {
+    if (!flagId) return;
+    const span = document.querySelector(`.flagged-word[data-id="${flagId}"]`);
+    if (!span) return;
 
-    // Add to whitelist — prevents re-flagging on future scans
-    whitelist.add(keyword.toLowerCase());
+    const keyword = (span.dataset.keyword || '').toLowerCase();
+    if (!keyword) return;
+    whitelist.add(keyword);
+    knowledgeSynced = whitelist.size;
 
     hidePopover();
+    span.className = 'bg-green-50 text-green-700 font-bold px-1 rounded mx-0.5 border border-green-200';
+    span.innerHTML = `${span.textContent}<span class="ml-1 inline-block text-[10px] font-bold uppercase tracking-wide text-green-700 bg-green-100 border border-green-200 rounded px-1">Human Overridden</span>`;
+    span.removeAttribute('data-severity');
+    span.removeAttribute('data-reason');
+    span.classList.remove('flagged-word');
 
-    // Track how many instances of each tier we are overriding
-    let overriddenCrit = 0;
-    let overriddenWarn = 0;
-
-    // Query all flagged spans that match this keyword
-    // Using data attribute comparison to avoid CSS selector injection issues
-    document.querySelectorAll('.flagged-word').forEach(span => {
-      if (span.dataset.keyword !== keyword.toLowerCase()) return;
-
-      if (span.dataset.tier === 'critical') overriddenCrit++;
-      else overriddenWarn++;
-
-      // Apply the "approved / whitelisted" green style
-      span.className = 'bg-green-100 text-green-700 font-bold px-1 rounded mx-0.5 border border-green-200';
-
-      // Clone to remove attached event listeners cleanly
-      span.parentNode.replaceChild(span.cloneNode(true), span);
-    });
-
-    // Adjust global counters
-    criticalCount = Math.max(0, criticalCount - overriddenCrit);
-    warningCount  = Math.max(0, warningCount  - overriddenWarn);
-    overrideCount += (overriddenCrit + overriddenWarn);
+    activeFlagCount = Math.max(0, activeFlagCount - 1);
+    overrideCount += 1;
 
     updateStats();
 
-    // Simulate RAG / Knowledge Base self-correction toast
-    showToast('Check-A-Paw AI learned this context! Database self-corrected. 🧠', 'success');
+    showToast('🐾 Feedback Captured: Rule added to Whitelist. Database self-corrected via local simulation!', 'success');
 
-    // Transition Shiba to the override state …
     setShibaState('overrideTriggered');
 
-    // … then after 2.5 s settle into whichever risk state still applies
     setTimeout(() => {
-      if      (criticalCount > 0) setShibaState('criticalBlock');
-      else if (warningCount  > 0) setShibaState('risksFound');
+      const redFlags = document.querySelectorAll('.flagged-word[data-severity="red"]').length;
+      if      (redFlags > 0)      setShibaState('criticalBlock');
+      else if (activeFlagCount>0) setShibaState('risksFound');
       else                        setShibaState('purified');
     }, 2500);
   }
@@ -1065,13 +991,14 @@
   // ══════════════════════════════════════════════════════════
   // FUNCTION: updateStats()
   //
-  // Refreshes the three live counters in the header ticker bar.
+  // Refreshes the three live counters:
+  // Active Flags, Overridden Rules, and Knowledge Base Synced.
   // Called after every scan and every override action.
   // ══════════════════════════════════════════════════════════
   function updateStats() {
-    document.getElementById('stat-critical').textContent  = criticalCount;
-    document.getElementById('stat-warnings').textContent  = warningCount;
-    document.getElementById('stat-overridden').textContent = overrideCount;
+    document.getElementById('stat-active-flags').textContent = activeFlagCount;
+    document.getElementById('stat-overridden').textContent   = overrideCount;
+    document.getElementById('stat-kb-synced').textContent    = knowledgeSynced;
   }
 
 
@@ -1110,55 +1037,21 @@
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: setExportPath(path)
-  //
-  // Phase 4 — Switches the active export path ('creative' | 'conservative').
-  // Updates the toggle button styles.
-  // If the compare panel is already open, re-runs purifyDocument()
-  // so the cleansed column refreshes to match the new path.
-  // ══════════════════════════════════════════════════════════
-  function setExportPath(path) {
-    exportPath = path;
-
-    // Update export tab button styles
-    document.getElementById('btn-creative').classList.toggle('tab-active', path === 'creative');
-    document.getElementById('btn-conservative').classList.toggle('tab-active', path === 'conservative');
-
-    // Regenerate cleansed output if compare panel is visible
-    if (!document.getElementById('compare-panel').classList.contains('hidden')) {
-      purifyDocument();
-    }
-  }
-
-
-  // ══════════════════════════════════════════════════════════
   // FUNCTION: buildCleansedText(originalText, dictionary, path)
   //
-  // Replaces all flagged keywords in the original text with the
-  // chosen path's suggestion. Whitelisted words are left untouched.
-  // Operates on plain text (no HTML entities).
-  // Returns a plain-text string ready for clipboard or display.
+  // Replaces all active-role flagged keywords with either the creative
+  // or conservative recommendation while preserving non-flagged text.
   // ══════════════════════════════════════════════════════════
   function buildCleansedText(originalText, dictionary, path) {
     let result = originalText;
-
-    // Sort longest-first to prevent partial-phrase conflicts
-    const allKeywords = [
-      ...dictionary.critical.map(k => ({ word: k })),
-      ...dictionary.warning.map(k  => ({ word: k }))
-    ].sort((a, b) => b.word.length - a.word.length);
-
     const reEscape = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const entries = Object.keys(dictionary).sort((a, b) => b.length - a.length);
 
-    allKeywords.forEach(({ word }) => {
-      // Always re-check whitelist here — user may have overridden after the scan
+    entries.forEach(word => {
       if (whitelist.has(word.toLowerCase())) return;
-
-      const suggestions  = SUGGESTIONS[word.toLowerCase()] || SUGGESTIONS['_fallback'];
-      const replacement  = suggestions[path] || suggestions['_fallback'][path] || word;
-
-      const regex = new RegExp(reEscape(word), 'gi');
-      result = result.replace(regex, replacement);
+      const suggestions = SUGGESTIONS[word.toLowerCase()] || SUGGESTIONS['_fallback'];
+      const replacement = suggestions[path] || word;
+      result = result.replace(new RegExp(reEscape(word), 'gi'), replacement);
     });
 
     return result;
@@ -1166,82 +1059,83 @@
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: purifyDocument()
+  // FUNCTION: buildCheckAPawPath(baseSafeText)
   //
-  // Phase 4 — Generates the side-by-side original vs cleansed compare.
-  //  1. Builds the cleansed text using the current export path.
-  //  2. Populates both columns of the compare viewport.
-  //  3. Stores the cleansed text for clipboard access.
-  //  4. If no flags remain, transitions Shiba to 'purified'.
+  // Creates the playful pet-themed variant from already-safe text.
   // ══════════════════════════════════════════════════════════
-  function purifyDocument() {
+  function buildCheckAPawPath(baseSafeText) {
+    return `🐾 Pawsitive Update from Check-A-Paw!\n\n${baseSafeText}\n\n🐶 Friendly reminder: every claim is now leash-safe, tail-wag approved, and ready for sharing! ✨`;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: setOptimizationTab(tabName)
+  //
+  // Toggles visible optimization content pane and active tab style.
+  // ══════════════════════════════════════════════════════════
+  function setOptimizationTab(tabName) {
+    optimizationTab = tabName;
+    ['creative', 'conservative', 'checkapaw'].forEach(tab => {
+      document.getElementById(`tab-${tab}`).classList.toggle('tab-active', tab === tabName);
+      document.getElementById(`opt-content-${tab}`).classList.toggle('hidden', tab !== tabName);
+    });
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: optimizeAndPolish()
+  //
+  // Generates the three required safe delivery paths in parallel.
+  // ══════════════════════════════════════════════════════════
+  function optimizeAndPolish() {
     if (!lastScanOriginal) {
       showToast('🐾 Please run Sniff Out Risks first!', 'warning');
       return;
     }
 
-    // Rebuild the current dictionary (reflects latest whitelist state)
-    const dictionary  = getActiveDictionary();
-    const cleansedTxt = buildCleansedText(lastScanOriginal, dictionary, exportPath);
+    const dictionary = getActiveDictionary();
+    optimizedOutputs.creative = buildCleansedText(lastScanOriginal, dictionary, 'creative');
+    optimizedOutputs.conservative = buildCleansedText(lastScanOriginal, dictionary, 'conservative');
+    optimizedOutputs.checkapaw = buildCheckAPawPath(optimizedOutputs.conservative);
 
-    // Show the compare panel
-    const comparePanel = document.getElementById('compare-panel');
-    comparePanel.classList.remove('hidden');
+    document.getElementById('opt-text-creative').innerHTML = escapeHtml(optimizedOutputs.creative).replace(/\n/g, '<br>');
+    document.getElementById('opt-text-conservative').innerHTML = escapeHtml(optimizedOutputs.conservative).replace(/\n/g, '<br>');
+    document.getElementById('opt-text-checkapaw').innerHTML = escapeHtml(optimizedOutputs.checkapaw).replace(/\n/g, '<br>');
 
-    // Populate original column — escape for safe HTML display, preserve line breaks
-    document.getElementById('compare-original').innerHTML =
-      escapeHtml(lastScanOriginal).replace(/\n/g, '<br>');
+    document.getElementById('optimize-panel').classList.remove('hidden');
+    setOptimizationTab(optimizationTab || 'creative');
 
-    // Populate cleansed column
-    document.getElementById('compare-cleansed').innerHTML =
-      escapeHtml(cleansedTxt).replace(/\n/g, '<br>');
-
-    // Store plain-text cleansed version for the copy button
-    comparePanel.dataset.cleansed = cleansedTxt;
-
-    // If everything is clear, celebrate with the purified state
-    if (criticalCount === 0 && warningCount === 0) {
-      setShibaState('purified');
-    }
-
-    // Smooth scroll so the user sees the compare panel
-    comparePanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    setShibaState('polished');
+    document.getElementById('optimize-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: copySafeVersion()
+  // FUNCTION: copyOptimizedVersion(tabName)
   //
-  // Phase 4 — Copies the current cleansed text to the clipboard.
-  // Shows the "Check-A-Paw Approval Badge" success toast and
-  // transitions Shiba to the 'purified' state.
-  // Falls back to execCommand for browsers without Clipboard API.
+  // Copies one selected tab output, then shows a per-tab checkmark state.
   // ══════════════════════════════════════════════════════════
-  function copySafeVersion() {
-    const comparePanel = document.getElementById('compare-panel');
-    const cleansed = comparePanel.dataset.cleansed;
-
-    if (!cleansed) {
-      showToast('🐾 Please run Purify Document first!', 'warning');
+  function copyOptimizedVersion(tabName) {
+    const text = optimizedOutputs[tabName];
+    if (!text) {
+      showToast('🐾 Please click Optimize & Polish first!', 'warning');
       return;
     }
 
-    // Success handler — shared by both clipboard paths
+    const button = document.getElementById(`copy-${tabName}`);
+    const previousLabel = button.textContent;
     const onSuccess = () => {
-      showToast(
-        'Document stamped with a Check-A-Paw Approval Badge! Ready for Legal hand-off 🐾',
-        'success'
-      );
-      setShibaState('purified');
+      button.textContent = '✅ Copied!';
+      setTimeout(() => { button.textContent = previousLabel; }, 1800);
+      showToast('Document stamped with a Check-A-Paw Approval Badge! Ready for Legal hand-off 🐾', 'success');
     };
 
-    // Try the modern Clipboard API first
     if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(cleansed)
+      navigator.clipboard.writeText(text)
         .then(onSuccess)
-        .catch(() => fallbackCopy(cleansed, onSuccess));
+        .catch(() => fallbackCopy(text, onSuccess));
     } else {
-      fallbackCopy(cleansed, onSuccess);
+      fallbackCopy(text, onSuccess);
     }
   }
 

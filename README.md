@@ -4,12 +4,12 @@
 
 ## Features
 
-- **Multi-Role Compliance Scanning** — Switch between Marketing, Product Manager, and Policy dictionaries to flag role-specific risks in one click.
-- **Two-Tier Risk Highlighting** — Critical breaches (🔴 red) and tone/context warnings (🟡 yellow) are highlighted inline so problems are immediately visible.
-- **Smart Recommendations** — Hover any flagged word to see a Creative alternative (conversion-optimised) and a Conservative alternative (legally bulletproof).
-- **Human-in-the-Loop Override** — Approve context-specific exceptions: the word turns green, the counter updates, and the in-memory whitelist prevents re-flagging on future scans.
-- **Side-by-Side Purification** — Generate and compare your original text against the cleansed version, choosing Creative or Conservative replacement style.
-- **One-Click Copy** — Copy the safe version to your clipboard with a Check-A-Paw Approval Badge toast.
+- **Weighted Role Dictionaries (`WEIGHT_DICTIONARIES`)** — Each role keyword includes severity (`red` / `yellow`) and human-readable legal/policy reasons.
+- **Two-Tier Risk Highlighting with Traceable IDs** — Every flagged match is wrapped with a unique `data-id`, plus `data-keyword` / `data-severity` metadata.
+- **Smart Recommendations + Reasoning** — Hover or click any flagged word to see severity status, legal/policy rationale, and Creative/Conservative alternatives.
+- **Human-in-the-Loop Override** — `[Ignore & Whitelist 🐾]` marks only that specific flag as Human Overridden, updates live metrics, and prevents future re-flagging.
+- **3-Path AI Optimization Generator** — `【✨ Optimize & Polish Document】` produces parallel Creative, Conservative, and Check-A-Paw delivery variants.
+- **Independent Copy Per Variant** — Each optimization tab has its own copy button with `✅ Copied!` success state.
 - **Shiba Inu State Machine** — A delightful anime pup avatar guides you through every phase with contextual dialogue.
 
 ## How to Run
@@ -17,7 +17,8 @@
 1. **Clone or download** this repository.
 2. **Double-click `index.html`** — it opens in any modern browser with no build step, no server, and no dependencies to install.
    - All assets (Tailwind CSS) are loaded via CDN, so an internet connection is required on first load.
-3. Select a **Role Tag** (Marketing / Product Manager / Policy), then click **🐾 Sniff Out Risks** to scan the sample text.
+3. Select a **Role Tag** (Marketing / Product Manager / Policy), then click **🐾 Sniff Out Risks**.
+4. Review highlights, use **[Ignore & Whitelist 🐾]** where needed, then click **【✨ Optimize & Polish Document】**.
 
 ## Tech Stack
 
