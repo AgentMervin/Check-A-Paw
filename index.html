@@ -68,6 +68,15 @@
     /* ── Subtle card hover lift ─────────────────────────────── */
     .card { transition: box-shadow 0.2s ease; }
     .card:hover { box-shadow: 0 8px 24px rgba(245,158,11,0.10); }
+
+    /* ── Metric bounce animation for live counter updates ──── */
+    @keyframes metricPop {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.24); }
+      60%  { transform: scale(0.94); }
+      100% { transform: scale(1); }
+    }
+    .metric-bounce { animation: metricPop 0.34s ease; }
   </style>
 </head>
 
@@ -286,6 +295,17 @@
         </div>
       </div>
 
+      <!-- ─── Phase 3 — Remediation Matrix ─────────────────── -->
+      <div id="remediation-panel" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+        <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">
+          Phase 3 — Remediation Matrix
+        </h2>
+        <p class="text-xs text-gray-500 mb-3">
+          Toggle any issue pill to whitelist or restore it instantly.
+        </p>
+        <div id="remediation-pills" class="flex flex-wrap gap-2"></div>
+      </div>
+
 
       <!-- ─── Phase 4 Output — Multi-Tab Parallel Delivery ───── -->
       <!--
@@ -348,6 +368,7 @@
   let currentFlagId     = null;        // data-id of the flag currently shown in popover
   let optimizationTab   = 'creative';  // Which optimization tab is visible
   let optimizedOutputs  = { creative: '', conservative: '', checkapaw: '' }; // Last generated outputs
+  let scanDelayTimer    = null;        // Timeout handle for delayed scan rendering
 
 
   // ──────────────────────────────────────────────────────────
@@ -364,33 +385,28 @@
 
   const WEIGHT_DICTIONARIES = {
     marketing: {
-      'best':                { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
-      'no.1':                { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
-      'top-tier':            { severity: 'red',    reason: 'Violates advertising law regarding absolute superlatives.' },
-      '100% guaranteed':     { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
-      'risk-free':           { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
-      'permanent':           { severity: 'red',    reason: 'Over-promising commercial terms vulnerable to legal litigation.' },
+      'miracle':             { severity: 'red',    reason: 'Unverified health/performance claim' },
+      'best in class':       { severity: 'red',    reason: 'FTC compliance violation regarding unsubstantiated superlatives' },
+      'cheapest':            { severity: 'red',    reason: 'FTC compliance violation regarding unsubstantiated superlatives' },
+      '100% guaranteed':     { severity: 'red',    reason: 'Deceptive commercial practice risk under consumer protection law' },
+      'risk-free':           { severity: 'red',    reason: 'Deceptive commercial practice risk under consumer protection law' },
       'officially certified':{ severity: 'yellow', reason: 'Requires strict institutional credentials.' },
       'government approved': { severity: 'yellow', reason: 'Requires strict institutional credentials.' },
-      'best in class':       { severity: 'yellow', reason: 'Requires substantiation to avoid misleading comparative claims.' },
-      'miracle':             { severity: 'yellow', reason: 'May imply unsubstantiated efficacy in regulated messaging.' }
+      'top-tier':            { severity: 'yellow', reason: 'Requires verifiable benchmarks for comparative advertising.' }
     },
     pm: {
-      'track user location':               { severity: 'red',    reason: 'Severe GDPR/CCPA privacy violation.' },
-      'collect data without consent':      { severity: 'red',    reason: 'Severe GDPR/CCPA privacy violation.' },
-      'save user credentials in plaintext':{ severity: 'red',    reason: 'Critical data security threat.' },
-      '100% bug-free':                     { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' },
-      'instant loading':                   { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' },
-      'track user':                        { severity: 'yellow', reason: 'Privacy-sensitive tracking language requires explicit disclosure.' },
-      'save credentials':                  { severity: 'yellow', reason: 'Security controls and encryption commitments must be explicit.' }
+      'track user behavior': { severity: 'red',    reason: 'GDPR Article 6 Non-compliance' },
+      'without consent':     { severity: 'red',    reason: 'CCPA opt-out workflow breach' },
+      'save credentials':    { severity: 'red',    reason: 'Critical OWASP data security vulnerability' },
+      'track user location': { severity: 'yellow', reason: 'Location data collection requires explicit opt-in and retention policy.' },
+      'instant loading':     { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' }
     },
     policy: {
-      'massive crackdown':         { severity: 'red',    reason: 'Aggressive, politically sensitive qualitative phrasing.' },
-      'total ban':                 { severity: 'red',    reason: 'Aggressive, politically sensitive qualitative phrasing.' },
-      'completely overhaul':       { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
-      'destroy market competitors':{ severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
-      'regime':                    { severity: 'yellow', reason: 'Potentially inflammatory geopolitical framing in public communication.' },
-      'propaganda':                { severity: 'yellow', reason: 'Highly charged rhetoric that may escalate reputational risk.' }
+      'massive crackdown':   { severity: 'red',    reason: 'Aggressive public relations phrasing; highly sensitive tone' },
+      'regime\'s propaganda':{ severity: 'red',    reason: 'Inflammatory geopolitical stance; major corporate neutrality risk' },
+      'total ban':           { severity: 'red',    reason: 'Extreme qualitative language lacking diplomatic ambiguity' },
+      'completely overhaul': { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
+      'destroy market competitors': { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' }
     }
   };
 
@@ -456,6 +472,10 @@
       creative:     'analyse engagement patterns',
       conservative: 'collect anonymised interaction data with user consent'
     },
+    'track user behavior': {
+      creative:     'analyse engagement patterns with transparent permissions',
+      conservative: 'collect behavioural analytics only with explicit lawful consent'
+    },
     'sell data': {
       creative:     'share anonymised insights with trusted partners',
       conservative: 'transfer de-identified aggregate data to authorised third parties under Data Processing Agreements'
@@ -493,6 +513,10 @@
     'propaganda': {
       creative:     'messaging campaign',
       conservative: 'official communications'
+    },
+    'regime\'s propaganda': {
+      creative:     'state messaging campaign',
+      conservative: 'government communications narrative'
     },
     'censorship': {
       creative:     'content moderation',
@@ -540,7 +564,7 @@
   // ──────────────────────────────────────────────────────────
   // SHIBA INU STATE MACHINE
   //
-  // All 6 avatar states with their emoji and exact dialogue strings.
+  // Avatar states with their emoji and exact dialogue strings.
   // ──────────────────────────────────────────────────────────
 
   const SHIBA_STATES = {
@@ -566,17 +590,27 @@
     },
     overrideTriggered: {
       emoji:    '💡🐕',
-      dialogue: '💡🐕 "Got it! Human feedback recorded. I am getting smarter!"',
+      dialogue: '💡🐕 "Understood, hooman! Overriding rule. My local knowledge base has been updated!"',
       badge:    'Override Triggered'
     },
-    roleSelected: {
+    roleMarketing: {
       emoji:    '🐕',
-      dialogue: '🐕 "Understood! Loading the specific dictionary database for you!"',
-      badge:    'Role Context Loaded'
+      dialogue: '🐕 Marketing context loaded. Scanning for promotional claims, superlatives, and promise-heavy language.',
+      badge:    'Marketing Context Loaded'
+    },
+    rolePM: {
+      emoji:    '🐕',
+      dialogue: '🐕 "Product Manager mode active. Monitoring for data privacy hazards, user tracking breaches, and technical vulnerabilities."',
+      badge:    'PM Context Loaded'
+    },
+    rolePolicy: {
+      emoji:    '🐕',
+      dialogue: '🐕 "Policy context loaded. Scanning text for sensitive regulatory tone, qualitative extremes, and inflammatory language."',
+      badge:    'Policy Context Loaded'
     },
     polished: {
       emoji:    '🎉🐕',
-      dialogue: '🎉🐕 "Ta-da! The final delivery options are ready. Pick your favorite safe path!"',
+      dialogue: '🎉🐕 "Magnificent! The parallel universes have been synthesized. Pick your preferred safe version below!"',
       badge:    'Multi-Option Delivery Ready'
     },
     purified: {
@@ -610,7 +644,7 @@
   // Updates the tab highlight and the description text that tells
   // the user what the active dictionary will flag.
   // ══════════════════════════════════════════════════════════
-  function setActiveRole(role) {
+  function setActiveRole(role, shouldRescan = true) {
     activeRole = role;
 
     // Remove active styling from all tabs, then apply to the chosen one
@@ -627,26 +661,51 @@
       policy:    '⚖️ Policy mode active — scanning for sensitive political tone, qualitative extremes, and inflammatory language.'
     };
     document.getElementById('role-description').textContent = descriptions[role] || '';
-    setShibaState('roleSelected');
+
+    const roleState = {
+      marketing: 'roleMarketing',
+      pm: 'rolePM',
+      policy: 'rolePolicy'
+    };
+    setShibaState(roleState[role] || 'awaiting');
+
+    // Context weighting UX requirement: changing roles instantly refreshes current analysis.
+    if (shouldRescan && document.getElementById('input-text').value.trim()) {
+      sniffOutRisks({ immediate: true, silentEmpty: true, preserveRoleState: true });
+    }
   }
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: getActiveDictionary()
+  // FUNCTION: getContextualDictionary()
   //
-  // Returns only the active role dictionary (Optimization 1 requirement)
-  // with any user-whitelisted keywords removed.
+  // Builds a role-aware dictionary where active-role entries keep full
+  // severity while off-role entries are downgraded to low-level warnings.
+  // User-whitelisted terms are removed entirely.
   // ══════════════════════════════════════════════════════════
-  function getActiveDictionary() {
-    const roleDictionary = WEIGHT_DICTIONARIES[activeRole] || {};
-    const filtered = {};
+  function getContextualDictionary() {
+    const contextual = {};
+    const activeDictionary = WEIGHT_DICTIONARIES[activeRole] || {};
 
-    Object.entries(roleDictionary).forEach(([keyword, meta]) => {
+    // Active role terms keep their native severity (primary weighting source).
+    Object.entries(activeDictionary).forEach(([keyword, meta]) => {
       if (whitelist.has(keyword.toLowerCase())) return;
-      filtered[keyword] = meta;
+      contextual[keyword] = { ...meta };
     });
 
-    return filtered;
+    // Non-active role terms are soft-degraded to low-level warnings.
+    Object.entries(WEIGHT_DICTIONARIES).forEach(([role, dictionary]) => {
+      if (role === activeRole) return;
+      Object.entries(dictionary).forEach(([keyword, meta]) => {
+        if (whitelist.has(keyword.toLowerCase()) || contextual[keyword]) return;
+        contextual[keyword] = {
+          severity: 'yellow',
+          reason: `${meta.reason} (Low-priority in current ${activeRole} context)`
+        };
+      });
+    });
+
+    return contextual;
   }
 
 
@@ -748,11 +807,12 @@
   // 4. Attaches hover listeners to all flagged spans.
   // 5. Transitions Shiba to the appropriate post-scan state.
   // ══════════════════════════════════════════════════════════
-  function sniffOutRisks() {
+  function sniffOutRisks(options = {}) {
+    const { immediate = false, silentEmpty = false, preserveRoleState = false } = options;
     const rawText = document.getElementById('input-text').value.trim();
 
     if (!rawText) {
-      showToast('🐾 Please enter some text first!', 'warning');
+      if (!silentEmpty) showToast('🐾 Please enter some text first!', 'warning');
       return;
     }
     if (!activeRole) {
@@ -761,11 +821,11 @@
     }
 
     // ── Transition to processing state ──
-    setShibaState('processing');
+    if (!immediate) setShibaState('processing');
 
     // Animate the avatar emoji while sniffing
     const avatarEl = document.getElementById('shiba-avatar');
-    avatarEl.classList.add('sniffing');
+    if (!immediate) avatarEl.classList.add('sniffing');
 
     // Show the output panel immediately so the user sees a loading message
     const outputPanel = document.getElementById('output-panel');
@@ -774,14 +834,15 @@
       '<span class="text-amber-400 animate-pulse">🔎 Sniffing through the compliance dictionaries…</span>';
 
     // ── Delay before real scan (gives animation time to play) ──
-    setTimeout(() => {
+    clearTimeout(scanDelayTimer);
+    scanDelayTimer = setTimeout(() => {
       avatarEl.classList.remove('sniffing');
 
       // Safely escape user input — critical for XSS prevention
       const escapedText = escapeHtml(rawText);
 
       // Get the dictionary appropriate for the current role + whitelist
-      const dictionary = getActiveDictionary();
+      const dictionary = getContextualDictionary();
 
       // Run the inspection engine
       const highlightedHtml = highlightText(escapedText, dictionary);
@@ -797,22 +858,26 @@
 
       // Wire up hover + click listeners on every flagged span
       attachPopoverListeners();
+      updateRemediationMatrix();
 
       // Reveal the Phase 4 optimization controls
       document.getElementById('purify-section').classList.remove('hidden');
+      document.getElementById('remediation-panel').classList.remove('hidden');
 
       // Transition Shiba to the state that reflects the scan result
-      const redFlags = document.querySelectorAll('.flagged-word[data-severity="red"]').length;
-      if (redFlags > 0) {
-        setShibaState('criticalBlock');
-      } else if (activeFlagCount > 0) {
-        setShibaState('risksFound');
-      } else {
-        // No flags at all — immediately compliant!
-        setShibaState('purified');
+      if (!preserveRoleState) {
+        const redFlags = document.querySelectorAll('.flagged-word[data-severity="red"]').length;
+        if (redFlags > 0) {
+          setShibaState('criticalBlock');
+        } else if (activeFlagCount > 0) {
+          setShibaState('risksFound');
+        } else {
+          // No flags at all — immediately compliant!
+          setShibaState('purified');
+        }
       }
 
-    }, 1800); // 1.8 s animation window
+    }, immediate ? 0 : 1800); // Instant for role-switch auto-scan, animated for manual scans.
   }
 
 
@@ -854,22 +919,28 @@
     const popover = document.getElementById('popover-box');
     document.getElementById('popover-content').innerHTML = buildPopover(keyword, severity, reason, flagId);
 
-    // Position above the span using viewport-relative coords (fixed positioning)
+    // Position near the clicked/hovered token using viewport-relative coords.
     const rect = targetSpan.getBoundingClientRect();
     const POPOVER_W = 288; // matches CSS width: 288px
+    const POPOVER_H = 260;
 
     let left = rect.left;
-    let top  = rect.top - 8; // gap above the element; translateY(-100%) pulls it upward
+    let top  = rect.bottom + 10;
+    let transform = 'translateY(0)';
 
-    // Clamp horizontally so it never overflows the viewport
+    // If below would overflow, place above; if still tight, move right-side aligned.
+    if (top + POPOVER_H > window.innerHeight - 12) {
+      top = rect.top - 10;
+      transform = 'translateY(-100%)';
+    }
     if (left + POPOVER_W > window.innerWidth - 12) {
-      left = window.innerWidth - POPOVER_W - 12;
+      left = Math.max(8, rect.right - POPOVER_W);
     }
     if (left < 8) left = 8;
 
     popover.style.left      = `${left}px`;
     popover.style.top       = `${top}px`;
-    popover.style.transform = 'translateY(-100%)';
+    popover.style.transform = transform;
     popover.classList.add('visible');
 
     // Keep the popover open while the cursor is over it
@@ -901,6 +972,7 @@
   function buildPopover(keyword, severity, reason, flagId) {
     // Look up suggestions; fall back to the generic entry if not found
     const suggestions = SUGGESTIONS[keyword] || SUGGESTIONS['_fallback'];
+    const regulatoryTitle = getRegulatoryTitle(keyword, reason);
 
     const tierLabel = severity === 'red' ? '🔴 Red / Critical'  : '🟡 Yellow / Contextual';
     const tierCls   = severity === 'red'
@@ -912,11 +984,11 @@
       <div class="text-xs font-bold ${tierCls} border px-2 py-1 rounded-lg mb-3 inline-block">
         ${tierLabel}
       </div>
-      <p class="text-xs text-gray-500 mb-2">
-        Flagged: <strong class="text-gray-800">"${escapeHtml(keyword)}"</strong>
+      <p class="text-sm font-bold text-amber-700 mb-2">
+        "${escapeHtml(keyword)}" ${escapeHtml(regulatoryTitle)}
       </p>
-      <p class="text-xs text-gray-600 mb-3 bg-amber-50 border border-amber-100 rounded-lg px-2 py-1.5 leading-relaxed">
-        ${escapeHtml(reason || 'Context-sensitive language requires reviewer validation.')}
+      <p class="text-xs text-gray-600 mb-3 bg-amber-50 border border-amber-100 rounded-lg px-2 py-2 leading-relaxed">
+        Check-A-Paw flagged this because: ${escapeHtml(reason || 'Context-sensitive language requires reviewer validation.')}.
       </p>
 
       <div class="mb-2">
@@ -937,7 +1009,7 @@
         class="w-full text-xs font-bold bg-green-500 hover:bg-green-600 active:bg-green-700
                text-white py-2 px-3 rounded-xl transition-all shadow-sm"
         onclick="overrideWord('${flagId}')">
-        [Ignore &amp; Whitelist 🐾]
+        [🐾 Override &amp; Ingest to Whitelist]
       </button>
     `;
   }
@@ -961,11 +1033,12 @@
     const keyword = (span.dataset.keyword || '').toLowerCase();
     if (!keyword) return;
     whitelist.add(keyword);
-    knowledgeSynced = whitelist.size;
+    knowledgeSynced += 1;
 
     hidePopover();
-    span.className = 'bg-green-50 text-green-700 font-bold px-1 rounded mx-0.5 border border-green-200';
-    span.innerHTML = `${span.textContent}<span class="ml-1 inline-block text-[10px] font-bold uppercase tracking-wide text-green-700 bg-green-100 border border-green-200 rounded px-1">Human Overridden</span>`;
+    span.className = 'bg-green-100 text-green-800 line-through rounded px-1';
+    span.setAttribute('data-overridden', 'true');
+    span.style.margin = '0 2px';
     span.removeAttribute('data-severity');
     span.removeAttribute('data-reason');
     span.classList.remove('flagged-word');
@@ -974,8 +1047,9 @@
     overrideCount += 1;
 
     updateStats();
+    updateRemediationMatrix();
 
-    showToast('🐾 Feedback Captured: Rule added to Whitelist. Database self-corrected via local simulation!', 'success');
+    showToast('🐾 Check-A-Paw Whitelist Synced. Learning context...', 'success');
 
     setShibaState('overrideTriggered');
 
@@ -987,6 +1061,67 @@
     }, 2500);
   }
 
+  // Restores a previously overridden keyword by removing it from whitelist and re-scanning.
+  function restoreWord(keyword) {
+    if (!keyword) return;
+    whitelist.delete(keyword.toLowerCase());
+    overrideCount = Math.max(0, overrideCount - 1);
+    knowledgeSynced = Math.max(0, knowledgeSynced - 1);
+    sniffOutRisks({ immediate: true, silentEmpty: true });
+  }
+
+  // Derives a regulatory notice label to display in the interactive HITL card title.
+  function getRegulatoryTitle(keyword, reason = '') {
+    const signature = `${keyword} ${reason}`.toLowerCase();
+    if (signature.includes('gdpr'))   return '[GDPR Breach Notice]';
+    if (signature.includes('ccpa'))   return '[CCPA Opt-Out Notice]';
+    if (signature.includes('owasp'))  return '[OWASP Security Alert]';
+    if (signature.includes('ftc') || activeRole === 'marketing') return '[FTC Ad Guideline Warning]';
+    if (activeRole === 'policy' || signature.includes('neutrality')) return '[Corporate Neutrality Advisory]';
+    return '[Compliance Advisory]';
+  }
+
+  // Live Phase 3 remediation matrix; each pill toggles override/restore state.
+  function updateRemediationMatrix() {
+    const container = document.getElementById('remediation-pills');
+    if (!container) return;
+    const spans = Array.from(document.querySelectorAll('#output-text span[data-id][data-keyword]'));
+
+    if (!spans.length) {
+      container.innerHTML = '<span class="text-xs text-gray-500">No issues in the current output.</span>';
+      return;
+    }
+
+    container.innerHTML = spans.map(span => {
+      const keyword = span.dataset.keyword || '';
+      const id = span.dataset.id || '';
+      const severity = span.dataset.severity || 'green';
+      const overridden = span.dataset.overridden === 'true' || !span.classList.contains('flagged-word');
+      const color = overridden
+        ? 'bg-green-100 text-green-800 border-green-200'
+        : severity === 'red'
+          ? 'bg-red-100 text-red-700 border-red-200'
+          : 'bg-yellow-100 text-yellow-700 border-yellow-200';
+
+      return `<button
+                class="text-xs font-bold px-3 py-1.5 rounded-full border transition-all hover:shadow-sm ${color}"
+                onclick="toggleRemediationIssue('${escapeHtml(id)}')">
+                ${escapeHtml(keyword)} · ${overridden ? 'restore' : severity}
+              </button>`;
+    }).join('');
+  }
+
+  // Toggle handler for matrix pills.
+  function toggleRemediationIssue(flagId) {
+    const span = document.querySelector(`#output-text span[data-id="${flagId}"]`);
+    if (!span) return;
+    if (span.dataset.overridden === 'true' || !span.classList.contains('flagged-word')) {
+      restoreWord(span.dataset.keyword || '');
+      return;
+    }
+    overrideWord(flagId);
+  }
+
 
   // ══════════════════════════════════════════════════════════
   // FUNCTION: updateStats()
@@ -996,9 +1131,19 @@
   // Called after every scan and every override action.
   // ══════════════════════════════════════════════════════════
   function updateStats() {
-    document.getElementById('stat-active-flags').textContent = activeFlagCount;
-    document.getElementById('stat-overridden').textContent   = overrideCount;
-    document.getElementById('stat-kb-synced').textContent    = knowledgeSynced;
+    const metrics = [
+      { id: 'stat-active-flags', value: activeFlagCount },
+      { id: 'stat-overridden', value: overrideCount },
+      { id: 'stat-kb-synced', value: knowledgeSynced }
+    ];
+    metrics.forEach(metric => {
+      const el = document.getElementById(metric.id);
+      if (!el) return;
+      el.textContent = metric.value;
+      el.classList.remove('metric-bounce');
+      void el.offsetWidth; // force reflow to retrigger animation
+      el.classList.add('metric-bounce');
+    });
   }
 
 
@@ -1093,7 +1238,7 @@
       return;
     }
 
-    const dictionary = getActiveDictionary();
+    const dictionary = getContextualDictionary();
     optimizedOutputs.creative = buildCleansedText(lastScanOriginal, dictionary, 'creative');
     optimizedOutputs.conservative = buildCleansedText(lastScanOriginal, dictionary, 'conservative');
     optimizedOutputs.checkapaw = buildCheckAPawPath(optimizedOutputs.conservative);
@@ -1163,7 +1308,7 @@
 
     // Default to the Marketing role so the sample text in the
     // textarea triggers visible red/yellow flags immediately on first scan
-    setActiveRole('marketing');
+    setActiveRole('marketing', false);
   });
 
   </script>
