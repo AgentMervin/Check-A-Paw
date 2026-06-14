@@ -1,0 +1,13 @@
+# Local secrets — never commit these
+local.settings.json
+
+# Node
+node_modules/
+
+# Azure Functions build/runtime
+bin/
+obj/
+.python_packages/
+__azurite_db*__.json
+__blobstorage__/
+__queuestorage__/

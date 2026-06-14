@@ -34,6 +34,53 @@
     /* ── Body base font ─────────────────────────────────────── */
     body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; }
 
+    /* ════════════════════════════════════════════════════════
+       AMBER PALETTE POLYFILL
+       This Tailwind 2.2.19 CDN build ships WITHOUT the amber/orange
+       palettes, so classes like `bg-amber-500 text-white` render as a
+       transparent background — making white button text invisible.
+       The rules below restore the full amber scale used across the app.
+       ════════════════════════════════════════════════════════ */
+    .text-amber-300 { color: #fcd34d !important; }
+    .text-amber-400 { color: #fbbf24 !important; }
+    .text-amber-500 { color: #f59e0b !important; }
+    .text-amber-600 { color: #d97706 !important; }
+    .text-amber-700 { color: #b45309 !important; }
+
+    .bg-amber-50  { background-color: #fffbeb !important; }
+    .bg-amber-100 { background-color: #fef3c7 !important; }
+    .bg-amber-200 { background-color: #fde68a !important; }
+    .bg-amber-300 { background-color: #fcd34d !important; }
+    .bg-amber-400 { background-color: #fbbf24 !important; }
+    .bg-amber-500 { background-color: #f59e0b !important; }
+    .bg-amber-600 { background-color: #d97706 !important; }
+    .bg-amber-700 { background-color: #b45309 !important; }
+
+    .border-amber-100 { border-color: #fef3c7 !important; }
+    .border-amber-200 { border-color: #fde68a !important; }
+    .border-amber-300 { border-color: #fcd34d !important; }
+    .border-amber-600 { border-color: #d97706 !important; }
+
+    .placeholder-amber-300::placeholder { color: #fcd34d !important; }
+
+    /* Hover / active states for amber buttons */
+    .hover\:bg-amber-50:hover  { background-color: #fffbeb !important; }
+    .hover\:bg-amber-500:hover { background-color: #f59e0b !important; }
+    .hover\:bg-amber-600:hover { background-color: #d97706 !important; }
+    .active\:bg-amber-700:active { background-color: #b45309 !important; }
+
+    /* Gradient buttons (e.g. Optimize, sandbox header) */
+    .from-amber-400 { --tw-gradient-from: #fbbf24; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(251,191,36,0)); }
+    .from-amber-500 { --tw-gradient-from: #f59e0b; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(245,158,11,0)); }
+    .to-amber-500   { --tw-gradient-to: #f59e0b; }
+    .to-amber-600   { --tw-gradient-to: #d97706; }
+    .hover\:from-amber-500:hover { --tw-gradient-from: #f59e0b; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(245,158,11,0)); }
+    .hover\:to-amber-600:hover   { --tw-gradient-to: #d97706; }
+
+    /* Focus ring for the textarea */
+    .focus\:ring-amber-300:focus { --tw-ring-color: #fcd34d; box-shadow: 0 0 0 2px #fcd34d !important; }
+
+
     /* ── PWA safe-area insets (notched phones in standalone mode) ──
        padding-env() keeps content clear of hardware notches and home
        indicator bars when the app runs in full-screen standalone mode. */
@@ -170,6 +217,136 @@
     #install-btn.visible {
       display: inline-flex;
     }
+
+    /* ═══════════════════════════════════════════════════════
+       MULTI-PAGE STATE MACHINE
+       Each .page is a step container. Transitions cross-fade and
+       lift gently so steps feel like a guided, humanized flow. */
+    .page {
+      transition: opacity 0.32s ease, transform 0.32s ease;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .page.page-leaving {           /* mid-transition fade-out state */
+      opacity: 0;
+      transform: translateY(10px);
+      pointer-events: none;
+    }
+    .page.page-hidden {            /* fully removed from layout */
+      display: none;
+    }
+
+    /* ── Step tracker breadcrumb pills ──────────────────────── */
+    .step-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 0.4rem 0.85rem;
+      border-radius: 9999px;
+      border: 1px solid #fde68a;     /* amber-200 */
+      color: #b45309;                /* amber-700 */
+      background: #fffbeb;           /* amber-50 */
+      transition: all 0.25s ease;
+      cursor: pointer;
+      min-height: 0;                 /* override global button min-height when used on buttons */
+    }
+    .step-dot .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 1.25rem;
+      height: 1.25rem;
+      border-radius: 9999px;
+      background: #fde68a;
+      color: #92400e;
+      font-size: 0.7rem;
+    }
+    .step-dot.step-active {
+      background: #f59e0b;           /* amber-500 */
+      border-color: #f59e0b;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(245,158,11,0.30);
+    }
+    .step-dot.step-active .step-num { background: #ffffff; color: #b45309; }
+    .step-dot.step-done {
+      background: #ecfdf5;           /* green-50 */
+      border-color: #a7f3d0;         /* green-200 */
+      color: #047857;                /* green-700 */
+    }
+    .step-dot.step-done .step-num { background: #a7f3d0; color: #065f46; }
+    .step-connector {
+      flex: 1 1 auto;
+      max-width: 2.5rem;
+      height: 2px;
+      background: #fde68a;
+      border-radius: 2px;
+    }
+
+    /* ── Advanced Setup collapsible (Intake page) ──────────── */
+    #advanced-setup summary::-webkit-details-marker { display: none; }
+    #advanced-setup summary::marker { content: ''; }
+    #advanced-setup summary { transition: box-shadow 0.2s ease; }
+    #advanced-setup summary:hover { box-shadow: 0 4px 14px rgba(245,158,11,0.18); }
+    .adv-chevron { display: inline-block; transition: transform 0.25s ease; }
+    #advanced-setup[open] .adv-chevron { transform: rotate(180deg); }
+
+    /* ── Welcome / onboarding tour modal ───────────────────── */
+    #welcome-modal { transition: opacity 0.3s ease; }
+    #welcome-card  { transition: transform 0.3s ease; }
+    .flow-step-arrow { color: #fcd34d; }
+
+    /* ── File drop zone ─────────────────────────────────────── */
+    #drop-zone {
+      transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+      cursor: pointer;
+    }
+    #drop-zone:hover { border-color: #f59e0b; background-color: #fffbeb; }
+    #drop-zone.drag-over {
+      border-color: #f59e0b;
+      background-color: #fef3c7;     /* amber-100 */
+      transform: scale(1.01);
+    }
+
+    /* ── Animated progress bar fill ─────────────────────────── */
+    #upload-progress-bar { transition: width 0.12s linear; }
+
+    /* ── Parser sandbox modal: smooth fade + scale entrance ─── */
+    #parser-sandbox { transition: opacity 0.3s ease; }
+    #parser-sandbox-card { transition: transform 0.3s ease; }
+
+    /* ── Compliance Passport certificate modal ──────────────── */
+    #passport-modal  { transition: opacity 0.3s ease; }
+    #passport-card   { transition: transform 0.3s ease; }
+
+    /* Premium ticket body: dashed gold border + ambient gold glow */
+    .passport-ticket {
+      border: 3px dashed #f59e0b;
+      border-radius: 28px;
+      box-shadow:
+        0 0 0 4px rgba(245, 158, 11, 0.15),
+        0 0 42px rgba(245, 158, 11, 0.45);
+      animation: passportGlow 2.6s ease-in-out infinite;
+    }
+    @keyframes passportGlow {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(245,158,11,0.15), 0 0 30px rgba(245,158,11,0.35); }
+      50%      { box-shadow: 0 0 0 4px rgba(245,158,11,0.22), 0 0 52px rgba(245,158,11,0.60); }
+    }
+
+    /* Translucent emerald approval stamp, slightly rotated */
+    .passport-stamp {
+      width: 200px;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-14deg);
+      border: 4px solid rgba(16, 185, 129, 0.55);
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.10);
+      box-shadow: inset 0 0 0 3px rgba(16, 185, 129, 0.25);
+    }
   </style>
 </head>
 
@@ -191,6 +368,217 @@
 
 
   <!-- ═══════════════════════════════════════════════════════
+       WELCOME / ONBOARDING TOUR — first-run guided intro
+       Explains the 3-step flow so new users know where to start.
+       Gated by localStorage so returning users get the concise app.
+       ═══════════════════════════════════════════════════════ -->
+  <div id="welcome-modal"
+       class="fixed inset-0 flex items-center justify-center p-4 opacity-0 pointer-events-none"
+       style="z-index: 1300; background: rgba(60, 40, 10, 0.55); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);">
+
+    <div id="welcome-card" class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-amber-200 overflow-hidden transform scale-95">
+
+      <!-- Header -->
+      <div class="px-6 py-5 text-center bg-gradient-to-r from-amber-400 to-amber-500">
+        <img src="icons/shiba.png" alt="Shiba mascot"
+             class="w-16 h-16 mx-auto mb-1 object-contain select-none drop-shadow"
+             onerror="this.outerHTML='&lt;div class=\'text-4xl mb-1 select-none\'&gt;🐾&lt;/div&gt;';" />
+        <h2 class="text-lg font-extrabold text-white">Welcome to Check-A-Paw</h2>
+        <p class="text-xs font-semibold text-white text-opacity-90 mt-0.5">
+          Give your text a quick pet-check before it goes public
+        </p>
+      </div>
+
+      <!-- 3-step flow explainer -->
+      <div class="px-6 py-5">
+        <p class="text-xs font-bold text-amber-500 uppercase tracking-widest text-center mb-4">
+          Here's how it works — 3 simple steps
+        </p>
+
+        <div class="flex flex-col gap-3">
+          <div class="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+            <div class="text-2xl select-none flex-shrink-0">🪪</div>
+            <div>
+              <p class="text-sm font-bold text-amber-700">1 · Set Up &amp; Intake</p>
+              <p class="text-xs text-gray-600 leading-relaxed">Pick a role (Marketing, PM, or Policy), then paste or upload your document. Power-user options live under "Advanced Setup".</p>
+            </div>
+          </div>
+          <div class="text-center flow-step-arrow text-lg leading-none">↓</div>
+          <div class="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+            <div class="text-2xl select-none flex-shrink-0">🔍</div>
+            <div>
+              <p class="text-sm font-bold text-amber-700">2 · Audit</p>
+              <p class="text-xs text-gray-600 leading-relaxed">The Shiba auditor sniffs out risky wording and flags 🔴 critical and 🟡 warning terms. Hover any flag to review and override.</p>
+            </div>
+          </div>
+          <div class="text-center flow-step-arrow text-lg leading-none">↓</div>
+          <div class="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+            <div class="text-2xl select-none flex-shrink-0">🎀</div>
+            <div>
+              <p class="text-sm font-bold text-amber-700">3 · Delivery</p>
+              <p class="text-xs text-gray-600 leading-relaxed">Get polished, compliance-safe rewrites to copy — plus an exportable Compliance Passport certificate.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action -->
+      <div class="px-6 pb-6 pt-1">
+        <button onclick="dismissWelcome()"
+                class="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
+          🐾 Let's Go!
+        </button>
+        <p class="text-xs text-amber-400 text-center mt-3">
+          You can replay this tour anytime from the <strong>❓ Tour</strong> button up top.
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       PRE-PARSING CONFIRMATION SANDBOX — modal overlay
+       Fades in after a file's progress bar hits 100% / an image's
+       OCR scan finishes, letting the hooman verify the extracted
+       text before we run the deep compliance audit.
+       ═══════════════════════════════════════════════════════ -->
+  <div id="parser-sandbox"
+       class="fixed inset-0 flex items-center justify-center p-4 opacity-0 pointer-events-none"
+       style="z-index: 1100; background: rgba(120, 80, 20, 0.45); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);">
+
+    <!-- Modal card (scales up gently as it fades in) -->
+    <div id="parser-sandbox-card"
+         class="w-full max-w-3xl bg-amber-50 rounded-3xl shadow-2xl border border-amber-200 overflow-hidden transform scale-95">
+
+      <!-- Header -->
+      <div class="px-6 py-4 bg-gradient-to-r from-amber-400 to-amber-500 flex items-center justify-between gap-3">
+        <h2 class="text-sm sm:text-base font-extrabold text-white tracking-wide">🐾 Pre-Parsing Confirmation Sandbox</h2>
+        <span class="text-xs font-semibold text-white bg-amber-600 bg-opacity-40 px-3 py-1 rounded-full whitespace-nowrap">Verify before audit</span>
+      </div>
+
+      <!-- Split view: source preview (left) · extracted text (right) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-6">
+
+        <!-- LEFT — Source file preview card -->
+        <div class="flex flex-col items-center justify-center text-center bg-white rounded-2xl border border-amber-200 p-6 shadow-sm">
+          <div id="sandbox-file-icon" class="text-6xl select-none mb-3">📄</div>
+          <p id="sandbox-file-name" class="text-sm font-bold text-amber-700 break-all">document.pdf</p>
+          <p id="sandbox-file-meta" class="text-xs text-amber-400 mt-1 font-medium">Source file • ready to parse</p>
+        </div>
+
+        <!-- RIGHT — Shiba note + scrollable raw extracted text -->
+        <div class="flex flex-col">
+          <!-- Shiba Inu Auditor sits right above the text window -->
+          <div class="flex items-start gap-3 mb-2">
+            <img src="icons/shiba.png" alt="Shiba" class="w-10 h-10 object-contain select-none flex-shrink-0"
+                 onerror="this.outerHTML='&lt;div class=\'text-4xl select-none flex-shrink-0\'&gt;🐕&lt;/div&gt;';" />
+            <div class="bg-amber-100 border border-amber-200 rounded-2xl rounded-tl-sm px-3 py-2">
+              <p class="text-xs text-amber-800 leading-relaxed font-medium">
+                Hooman! I've extracted your document data. Take a quick look to make sure I didn't drop any
+                punctuation before we run the deep analysis!
+              </p>
+            </div>
+          </div>
+
+          <!-- Raw extracted text window (scrollable, monospace) -->
+          <div id="sandbox-raw-text"
+               class="scroll-area flex-1 min-h-40 max-h-64 overflow-y-auto text-xs text-gray-700 font-mono leading-relaxed whitespace-pre-wrap p-4 bg-white rounded-2xl border border-amber-100"></div>
+        </div>
+      </div>
+
+      <!-- Action -->
+      <div class="px-6 pb-6">
+        <button onclick="confirmParseAndAudit()"
+                class="w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700 text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
+          🐾 Looks Perfect, Run Audit!
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       COMPLIANCE PASSPORT — printable certificate modal
+       Fades in from Page 3 when the user exports their pass.
+       ═══════════════════════════════════════════════════════ -->
+  <div id="passport-modal"
+       class="fixed inset-0 flex items-center justify-center p-4 opacity-0 pointer-events-none"
+       style="z-index: 1200; background: rgba(60, 40, 10, 0.55); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);">
+
+    <div id="passport-card" class="relative w-full max-w-md transform scale-95">
+
+      <!-- The passport / ticket body: dashed gold border + ambient glow -->
+      <div class="passport-ticket relative bg-white p-6 overflow-hidden">
+
+        <!-- Header — golden holographic badge + title -->
+        <div class="relative flex items-center gap-3 mb-3" style="z-index: 2;">
+          <div class="text-4xl select-none" style="filter: drop-shadow(0 0 7px rgba(245,158,11,0.85));">🏅</div>
+          <div>
+            <h2 class="font-extrabold text-yellow-700 leading-tight" style="font-size: 0.92rem; letter-spacing: 0.11em;">
+              OFFICIAL CHECK-A-PAW PASS PORT
+            </h2>
+            <p class="text-xs text-yellow-600 font-semibold">Verified Compliance Certificate</p>
+          </div>
+        </div>
+
+        <div class="mb-4" style="height: 2px; background: linear-gradient(90deg, transparent, #f59e0b, transparent);"></div>
+
+        <!-- Metadata rows -->
+        <div class="relative mb-3" style="z-index: 2;">
+          <div class="flex justify-between items-center text-sm mb-2">
+            <span class="font-bold text-gray-500">Document Name</span>
+            <span id="passport-doc" class="font-bold text-gray-800 break-all text-right ml-3">—</span>
+          </div>
+          <div class="flex justify-between items-center text-sm mb-3">
+            <span class="font-bold text-gray-500">Audit Timestamp</span>
+            <span id="passport-time" class="font-bold text-gray-800 text-right ml-3">—</span>
+          </div>
+
+          <!-- Interactive resolved-violations metric -->
+          <div class="rounded-2xl p-3 bg-yellow-50 border border-yellow-200">
+            <div class="text-xs font-bold text-gray-500 mb-1">Active Violations Resolved</div>
+            <div class="flex items-center gap-2">
+              <span id="passport-peak" class="text-xl font-extrabold text-red-500">4</span>
+              <span class="text-gray-400 font-bold">➔</span>
+              <span class="text-xl font-extrabold text-green-600">0</span>
+              <span class="ml-auto text-xs font-bold text-green-600">✅ All Clear</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-3" style="height: 2px; background: linear-gradient(90deg, transparent, #f59e0b, transparent);"></div>
+
+        <!-- Regulatory codes addressed this session (populated dynamically) -->
+        <div id="passport-codes-wrap" class="relative hidden mb-3" style="z-index: 2;">
+          <div class="text-xs font-bold text-gray-500 mb-1.5 text-center">Regulatory Codes Addressed</div>
+          <div id="passport-codes" class="flex flex-wrap justify-center gap-1.5"></div>
+        </div>
+
+        <p class="relative text-center text-xs text-yellow-600 font-semibold" style="z-index: 2;">
+          🐾 Stamped &amp; sealed by the Check-A-Paw Auditor
+        </p>
+
+        <!-- Center stamp — translucent emerald circle overlaying the card -->
+        <div class="pointer-events-none absolute inset-0 flex items-center justify-center" style="z-index: 3;">
+          <div class="passport-stamp">
+            <span class="font-extrabold uppercase leading-tight px-4 text-center"
+                  style="color: rgba(5,150,105,0.78); font-size: 0.8rem; letter-spacing: 0.04em;">
+              100% Safe Pass<br/>Approved by<br/>the Pup 🐾
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Close / return -->
+      <button onclick="closePassport()"
+              class="mt-4 w-full bg-white text-yellow-700 font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm border border-yellow-200">
+        📸 Close &amp; Return Workspace
+      </button>
+    </div>
+  </div>
+
+
+  <!-- ═══════════════════════════════════════════════════════
        HEADER — Brand + Live Stats Ticker
        ═══════════════════════════════════════════════════════ -->
   <header class="bg-white border-b border-amber-100 shadow-sm sticky top-0 z-50 px-4 py-3"
@@ -207,6 +595,15 @@
 
       <!-- Right-side controls: stats + optional install button -->
       <div class="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-3">
+
+        <!-- Replay the onboarding tour at any time -->
+        <button id="tour-btn"
+                onclick="replayTour()"
+                class="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700
+                       bg-white hover:bg-amber-50 active:bg-amber-100
+                       px-3 py-2 rounded-xl transition-all shadow-sm border border-amber-200">
+          ❓ Tour
+        </button>
 
         <!-- "Install Check-A-Paw" button — only shown when the browser
              fires the beforeinstallprompt event (i.e. not yet installed
@@ -244,11 +641,76 @@
        Left  → Ingestion & Setup (Phase 1, 2 input, 4 controls)
        Right → AI Processing & Delivery (Shiba, output, compare)
        ═══════════════════════════════════════════════════════ -->
-  <main class="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 sm:py-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
+  <main class="max-w-screen-xl mx-auto px-4 sm:px-6 py-4 sm:py-6 flex flex-col gap-5">
 
+    <!-- ─── STEP TRACKER — multi-page state-machine breadcrumb ─── -->
+    <nav id="step-tracker" aria-label="Progress"
+         class="flex items-center justify-center gap-2 sm:gap-3 flex-wrap">
+      <button type="button" class="step-dot" data-step="intake" onclick="showPage('intake')">
+        <span class="step-num">1</span> Intake
+      </button>
+      <span class="step-connector" aria-hidden="true"></span>
+      <button type="button" class="step-dot" data-step="audit" onclick="showPage('audit')">
+        <span class="step-num">2</span> Audit
+      </button>
+      <span class="step-connector" aria-hidden="true"></span>
+      <button type="button" class="step-dot" data-step="delivery" onclick="showPage('delivery')">
+        <span class="step-num">3</span> Delivery
+      </button>
+    </nav>
+
+
+    <!-- ─── PERSISTENT SHIBA INU AUDITOR — guides every step ──── -->
+    <!--
+      Shiba lives outside the page containers so a single avatar
+      narrates the whole journey. The emoji + dialogue + badge update
+      automatically as the user moves through each phase.
+    -->
+    <div class="card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+      <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-4">
+        🤖 Shiba Inu Auditor
+      </h2>
+      <div class="flex items-start gap-4">
+        <!-- Avatar — watercolor Shiba image, animates during processing.
+             Falls back to the 🐕 emoji if the image fails to load.
+             The mood emoji (🔎/🚫/🎉…) is shown as a small corner badge. -->
+        <div id="shiba-avatar" class="relative flex-shrink-0" style="width: 64px; height: 64px;">
+          <img id="shiba-img" src="icons/shiba.png" alt="Shiba Inu Auditor"
+               class="w-full h-full object-contain select-none"
+               onerror="this.style.display='none'; document.getElementById('shiba-img-fallback').style.display='flex';" />
+          <span id="shiba-img-fallback"
+                class="absolute inset-0 items-center justify-center text-5xl select-none"
+                style="display: none;">🐕</span>
+          <span id="shiba-emoji"
+                class="absolute -top-1 -right-1 text-2xl select-none"
+                style="filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25));"></span>
+        </div>
+
+        <div class="flex-1">
+          <!-- Dialogue bubble -->
+          <div class="bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-4 py-3">
+            <p id="shiba-dialogue" class="text-sm text-amber-800 leading-relaxed font-medium">
+              Welcome to Check-A-Paw, hooman! Pick your Role Tag and feed me some text to sniff out!
+            </p>
+          </div>
+          <!-- Status badge beneath the bubble -->
+          <span id="shiba-badge"
+                class="mt-2 inline-block text-xs font-semibold text-amber-500
+                       bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+            Awaiting Input
+          </span>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <!-- ░░  PAGE 1 — INTAKE (#page-intake)                 ░░ -->
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <section id="page-intake" class="page grid grid-cols-1 lg:grid-cols-2 gap-5">
 
     <!-- ╔══════════════════════════════════════════════╗ -->
-    <!-- ║  LEFT PANE — Ingestion & Setup               ║ -->
+    <!-- ║  LEFT COLUMN — Role Setup                    ║ -->
     <!-- ╚══════════════════════════════════════════════╝ -->
     <div class="flex flex-col gap-5">
 
@@ -258,32 +720,20 @@
           Phase 1 — Scenarios &amp; Role Tags
         </h2>
 
-        <!-- Three role toggle tabs -->
-        <div class="flex gap-2 flex-wrap">
-          <button
-            class="role-tab flex-1 text-xs font-semibold py-2.5 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all"
-            data-role="marketing"
-            onclick="setActiveRole('marketing')"
-            title="Tag A: Marketing — flags aggressive commercial claims">
-            🎨 Marketing<br/>
-            <span class="font-normal text-amber-400">(Creative Copy)</span>
-          </button>
-          <button
-            class="role-tab flex-1 text-xs font-semibold py-2.5 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all"
-            data-role="pm"
-            onclick="setActiveRole('pm')"
-            title="Tag B: Product Manager — flags data privacy issues">
-            📋 Product Manager<br/>
-            <span class="font-normal text-amber-400">(PRD &amp; Data Privacy)</span>
-          </button>
-          <button
-            class="role-tab flex-1 text-xs font-semibold py-2.5 px-3 rounded-xl border border-amber-200 text-amber-700 hover:bg-amber-50 transition-all"
-            data-role="policy"
-            onclick="setActiveRole('policy')"
-            title="Tag C: Policy — flags sensitive political tone markers">
-            ⚖️ Policy<br/>
-            <span class="font-normal text-amber-400">(Public Affairs / Memos)</span>
-          </button>
+        <!-- Role selector dropdown -->
+        <label for="role-select" class="block text-xs font-semibold text-amber-600 mb-1.5">
+          Choose the scenario that matches your document
+        </label>
+        <div class="relative">
+          <select id="role-select" onchange="setActiveRole(this.value)"
+                  class="w-full appearance-none bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold
+                         rounded-2xl pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300 cursor-pointer">
+            <option value="marketing">🎨 Marketing (Creative Copy)</option>
+            <option value="pm">📋 Product Manager (PRD &amp; Data Privacy)</option>
+            <option value="policy">⚖️ Policy (Public Affairs / Memos)</option>
+          </select>
+          <!-- Custom dropdown chevron -->
+          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-amber-500 text-xs">▼</span>
         </div>
 
         <!-- Dynamic description of what the active role flags -->
@@ -293,6 +743,149 @@
         </p>
       </div>
 
+      <!-- ─── ADVANCED SETUP (optional, collapsed by default) ───
+        Keeps the Intake page concise: power-user controls (AI model +
+        custom dictionary) live behind one toggle so first-time users
+        only see the two essentials — pick a role, add a document.
+      -->
+      <details id="advanced-setup" class="flex flex-col">
+        <summary class="card bg-white rounded-3xl px-5 py-4 shadow-sm border border-amber-100 cursor-pointer list-none flex items-center justify-between gap-2">
+          <span class="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            ⚙️ Advanced Setup <span class="text-amber-400 normal-case font-semibold lowercase">(optional)</span>
+          </span>
+          <span class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-amber-400 hidden sm:inline">AI model · custom rules</span>
+            <span class="adv-chevron text-amber-500 text-xs">▼</span>
+          </span>
+        </summary>
+
+        <div class="flex flex-col gap-5 mt-5">
+
+      <!-- ─── AI Model Selection ────────────────────────────── -->
+      <!--
+        Lets the user choose which LLM powers the compliance analysis.
+        Models are grouped by provider. The selection is stored in
+        `selectedModel` and surfaced in the Shiba's status + passport.
+      -->
+      <div class="card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+        <div class="flex items-center justify-between mb-3 gap-2">
+          <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            AI Model Selection
+          </h2>
+          <span id="model-badge"
+                class="text-xs font-bold text-white bg-amber-500 px-2.5 py-0.5 rounded-full whitespace-nowrap">🤖 Auto</span>
+        </div>
+
+        <label for="model-select" class="block text-xs font-semibold text-amber-600 mb-1.5">
+          Choose the engine that audits your document
+        </label>
+        <div class="relative">
+          <select id="model-select" onchange="setSelectedModel(this.value)"
+                  class="w-full appearance-none bg-amber-50 border border-amber-200 text-amber-700 text-sm font-semibold
+                         rounded-2xl pl-4 pr-10 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300 cursor-pointer">
+            <option value="auto">🐾 Check-A-Paw Auto (Recommended)</option>
+            <optgroup label="OpenAI">
+              <option value="gpt-4o">GPT-4o</option>
+              <option value="gpt-4o-mini">GPT-4o mini</option>
+              <option value="gpt-4-turbo">GPT-4 Turbo</option>
+              <option value="o1">o1 (reasoning)</option>
+            </optgroup>
+            <optgroup label="Anthropic">
+              <option value="claude-opus-4">Claude Opus 4</option>
+              <option value="claude-sonnet-4">Claude Sonnet 4</option>
+              <option value="claude-3-5-haiku">Claude 3.5 Haiku</option>
+            </optgroup>
+            <optgroup label="Google">
+              <option value="gemini-2-5-pro">Gemini 2.5 Pro</option>
+              <option value="gemini-2-5-flash">Gemini 2.5 Flash</option>
+            </optgroup>
+            <optgroup label="Meta">
+              <option value="llama-4-maverick">Llama 4 Maverick</option>
+              <option value="llama-3-3-70b">Llama 3.3 70B</option>
+            </optgroup>
+            <optgroup label="Mistral AI">
+              <option value="mistral-large">Mistral Large</option>
+              <option value="mixtral-8x22b">Mixtral 8x22B</option>
+            </optgroup>
+            <optgroup label="Other">
+              <option value="deepseek-v3">DeepSeek-V3</option>
+              <option value="grok-3">Grok 3</option>
+              <option value="command-r-plus">Cohere Command R+</option>
+            </optgroup>
+          </select>
+          <!-- Custom dropdown chevron -->
+          <span class="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-amber-500 text-xs">▼</span>
+        </div>
+
+        <p id="model-description"
+           class="text-xs text-amber-600 mt-3 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100 leading-relaxed">
+          🐾 Auto mode picks the best balance of speed and accuracy for compliance checks.
+        </p>
+      </div>
+
+      <!-- ─── Custom Compliance Dictionary upload ───────────── -->
+      <!--
+        Lets teams layer their OWN keyword rules on top of the built-in
+        role dictionaries. Accepts JSON or CSV; merged terms scan at full
+        severity in every role until cleared.
+      -->
+      <div class="card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+        <div class="flex items-center justify-between mb-3 gap-2">
+          <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            Custom Compliance Dictionary
+          </h2>
+          <span id="dict-count-badge"
+                class="hidden text-xs font-bold text-white bg-amber-500 px-2.5 py-0.5 rounded-full">0</span>
+        </div>
+
+        <!-- Dedicated dictionary drop / upload zone -->
+        <div id="dict-drop-zone"
+             class="border-2 border-dashed border-amber-300 rounded-2xl bg-amber-50 px-4 py-6 text-center cursor-pointer">
+          <div class="text-3xl mb-1 select-none">📖</div>
+          <p class="text-sm font-bold text-amber-700">Upload your own rule set</p>
+          <p class="text-xs text-amber-400 mt-1">JSON or CSV — <code>term, severity, reason</code></p>
+          <span class="mt-3 inline-block text-xs font-bold text-white bg-amber-500 px-4 py-2 rounded-xl shadow-sm">
+            📚 Browse Dictionary
+          </span>
+          <input type="file" id="dict-input" class="hidden" accept=".json,.csv,.txt" />
+        </div>
+
+        <!-- Loaded terms preview + management -->
+        <div id="dict-loaded-wrap" class="hidden mt-4">
+          <div class="flex items-center justify-between mb-2">
+            <span id="dict-loaded-name" class="text-xs font-bold text-amber-700 break-all">custom-rules</span>
+            <button onclick="clearCustomDictionary()"
+                    class="text-xs font-bold text-red-500 hover:text-red-600 flex-shrink-0 ml-2">
+              ✕ Clear
+            </button>
+          </div>
+          <div id="dict-chips" class="flex flex-wrap gap-1.5"></div>
+        </div>
+
+        <!-- Format hint -->
+        <details class="mt-3">
+          <summary class="text-xs font-semibold text-amber-500 cursor-pointer">Accepted formats</summary>
+          <div class="text-xs text-amber-500 mt-2 bg-amber-50 rounded-xl px-3 py-2 border border-amber-100 leading-relaxed">
+            <p class="font-bold mb-1">CSV</p>
+            <code class="block whitespace-pre-wrap">term,severity,reason
+fire sale,red,Unsubstantiated urgency claim
+limited time,yellow,Pressure tactic</code>
+            <p class="font-bold mt-2 mb-1">JSON</p>
+            <code class="block whitespace-pre-wrap">{ "fire sale": { "severity": "red", "reason": "..." } }</code>
+          </div>
+        </details>
+      </div>
+
+        </div><!-- /advanced-setup body -->
+      </details><!-- /ADVANCED SETUP -->
+
+    </div><!-- /INTAKE LEFT COLUMN -->
+
+
+    <!-- ╔══════════════════════════════════════════════╗ -->
+    <!-- ║  RIGHT COLUMN — Document Ingestion           ║ -->
+    <!-- ╚══════════════════════════════════════════════╝ -->
+    <div class="flex flex-col gap-5">
 
       <!-- ─── PHASE 2 — Document Input ───────────────────── -->
       <div class="card bg-white rounded-3xl p-5 shadow-sm border border-amber-100 flex-1">
@@ -300,81 +893,147 @@
           Phase 2 — Document Ingestion
         </h2>
 
+        <!-- File drop / upload zone — drag a file or click to browse.
+             A simulated upload + OCR/parse sequence runs before the
+             Pre-Parsing Confirmation Sandbox modal appears. -->
+        <div id="drop-zone"
+             class="border-2 border-dashed border-amber-300 rounded-2xl bg-amber-50 px-4 py-8 text-center">
+          <div class="text-4xl mb-2 select-none">📂</div>
+          <p class="text-sm font-bold text-amber-700">Drag &amp; drop a document or image</p>
+          <p class="text-xs text-amber-400 mt-1">PDF, TXT, DOC or PNG/JPG — we'll OCR &amp; parse it for you</p>
+          <span class="mt-3 inline-block text-xs font-bold text-white bg-amber-500 px-4 py-2 rounded-xl shadow-sm">
+            🐾 Browse Files
+          </span>
+          <!-- Hidden native picker (triggered by clicking the zone) -->
+          <input type="file" id="file-input" class="hidden"
+                 accept="image/*,.pdf,.txt,.doc,.docx" />
+        </div>
+
+        <!-- Upload / OCR progress (revealed once a file is chosen) -->
+        <div id="upload-progress-wrap" class="hidden mt-4 bg-amber-50 border border-amber-100 rounded-2xl p-4">
+          <div class="flex items-center justify-between mb-2 gap-3">
+            <span id="upload-file-name" class="text-xs font-bold text-amber-700 break-all">file</span>
+            <span id="upload-progress-pct" class="text-xs font-bold text-amber-500 flex-shrink-0">0%</span>
+          </div>
+          <!-- Progress track + animated fill -->
+          <div class="w-full h-2.5 bg-amber-100 rounded-full overflow-hidden">
+            <div id="upload-progress-bar" class="h-full bg-amber-500 rounded-full" style="width: 0%;"></div>
+          </div>
+          <p id="upload-progress-status" class="text-xs text-amber-500 font-medium mt-2">📤 Uploading…</p>
+        </div>
+
+        <!-- "or paste" divider -->
+        <div class="flex items-center gap-3 my-4">
+          <span class="flex-1 h-px bg-amber-100"></span>
+          <span class="text-xs font-bold text-amber-300 uppercase tracking-widest">or paste below</span>
+          <span class="flex-1 h-px bg-amber-100"></span>
+        </div>
+
         <!--
           Default sample text intentionally contains violations from all three roles
-          so the user can immediately click "Sniff Out Risks" to see results.
+          so the user can immediately run the audit to see results.
         -->
         <textarea
           id="input-text"
-          rows="9"
+          rows="7"
           class="w-full border border-amber-200 rounded-2xl p-4 text-sm text-gray-700
                  resize-none focus:outline-none focus:ring-2 focus:ring-amber-300
                  bg-amber-50 placeholder-amber-300 leading-relaxed"
           placeholder="Paste or type your document here…"
         >Introducing our miracle weight-loss solution — the cheapest, best in class product with 100% guaranteed, risk-free results! We track user behavior and save credentials without consent to personalise your journey. This massive crackdown against the regime's propaganda will lead to a total ban on censorship of radical voices.</textarea>
 
-        <!-- Primary CTA: kick off the inspection scan -->
+        <!-- Primary CTA: advance to the Audit page and run the scan -->
         <button
-          onclick="sniffOutRisks()"
+          onclick="goToAudit()"
           class="mt-4 w-full bg-amber-500 hover:bg-amber-600 active:bg-amber-700
                  text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
           🐾 Sniff Out Risks
         </button>
       </div>
 
+    </div><!-- /INTAKE RIGHT COLUMN -->
 
-      <!-- ─── PHASE 4 — AI Optimization Controls (revealed after scan) ── -->
-      <div id="purify-section" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
-        <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">
-          Phase 4 — AI Optimization (AI优化)
-        </h2>
-        <button
-          onclick="optimizeAndPolish()"
-          class="w-full bg-gradient-to-r from-amber-400 to-amber-500
-                 hover:from-amber-500 hover:to-amber-600
-                 text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
-          【✨ Optimize &amp; Polish Document】
-        </button>
-      </div>
-
-    </div><!-- /LEFT PANE -->
-
-
-    <!-- ╔══════════════════════════════════════════════╗ -->
-    <!-- ║  RIGHT PANE — AI Processing & Delivery       ║ -->
-    <!-- ╚══════════════════════════════════════════════╝ -->
-    <div class="flex flex-col gap-5">
-
-      <!-- ─── Shiba Inu Auditor — State-Machine Avatar ───── -->
-      <!--
-        This box is always visible. The avatar emoji + dialogue text
-        update automatically as the user moves through each phase.
+      <!-- ─── COMPLIANCE KNOWLEDGE BASE SEARCH ──────────────────
+        Full-width (spans both columns). Lets team members research
+        policy rules from the ENRICHED_COMPLIANCE_DICTIONARY without
+        running an audit. Matches keyword, topic, code, or description.
       -->
-      <div class="card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
-        <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-4">
-          🤖 Shiba Inu Auditor
-        </h2>
-        <div class="flex items-start gap-4">
-          <!-- Avatar emoji — animates during processing -->
-          <div id="shiba-avatar" class="text-5xl select-none flex-shrink-0">🐕</div>
-
-          <div class="flex-1">
-            <!-- Dialogue bubble -->
-            <div class="bg-amber-50 border border-amber-200 rounded-2xl rounded-tl-sm px-4 py-3">
-              <p id="shiba-dialogue" class="text-sm text-amber-800 leading-relaxed font-medium">
-                Welcome to Check-A-Paw, hooman! Pick your Role Tag and feed me some text to sniff out!
-              </p>
-            </div>
-            <!-- Status badge beneath the bubble -->
-            <span id="shiba-badge"
-                  class="mt-2 inline-block text-xs font-semibold text-amber-500
-                         bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-              Awaiting Input
-            </span>
-          </div>
+      <div class="lg:col-span-2 card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+        <div class="flex items-center justify-between gap-2 mb-1">
+          <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest">
+            📚 Compliance Knowledge Base
+          </h2>
+          <span class="text-xs font-semibold text-amber-400 hidden sm:inline">no audit required</span>
         </div>
+        <p class="text-xs text-amber-600 mb-3 leading-relaxed">
+          Search our internal rule library by keyword, topic (e.g. <strong>Privacy</strong>), or regulatory code (e.g. <strong>GDPR</strong>).
+        </p>
+
+        <!-- Search input -->
+        <div class="relative">
+          <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-amber-400 text-sm">🔍</span>
+          <input
+            type="text"
+            id="kb-search-input"
+            autocomplete="off"
+            oninput="searchKnowledgeBase(this.value)"
+            placeholder="Try 'Privacy', 'GDPR', or 'track user behavior'…"
+            class="w-full bg-amber-50 border border-amber-200 text-amber-700 text-sm font-medium
+                   rounded-2xl pl-11 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-amber-300
+                   placeholder-amber-300" />
+        </div>
+
+        <!-- ── Foundry IQ (Microsoft IQ intelligence layer) ─────────────── -->
+        <div class="mt-3 flex items-center justify-end">
+          <button
+            type="button"
+            id="foundry-iq-btn"
+            onclick="askFoundryIQ()"
+            class="inline-flex items-center gap-2 text-xs font-bold text-white
+                   bg-indigo-600 hover:bg-indigo-700 rounded-2xl px-4 py-2 transition
+                   focus:outline-none focus:ring-2 focus:ring-indigo-300">
+            <span aria-hidden="true">✨</span>
+            <span>Ask Foundry IQ</span>
+          </button>
+        </div>
+
+        <!-- Grounded answer panel (populated by askFoundryIQ) -->
+        <div id="foundry-iq-panel" class="hidden mt-3 rounded-2xl border border-indigo-200 bg-indigo-50 p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs font-bold text-indigo-700 uppercase tracking-widest">
+              ✨ Grounded by Foundry IQ
+            </span>
+            <span id="foundry-iq-kb" class="text-[10px] font-semibold text-indigo-400"></span>
+          </div>
+          <div id="foundry-iq-answer" class="text-sm text-indigo-900 leading-relaxed whitespace-pre-line"></div>
+          <div id="foundry-iq-citations" class="mt-3 space-y-1"></div>
+        </div>
+
+        <!-- Results grid (populated by searchKnowledgeBase) -->
+        <div id="kb-results" class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4"></div>
+
+        <!-- Empty / no-match state -->
+        <p id="kb-empty" class="text-xs text-amber-400 italic mt-4 text-center">
+          Start typing to explore the compliance knowledge base.
+        </p>
       </div>
 
+    </section><!-- /PAGE 1 INTAKE -->
+
+
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <!-- ░░  PAGE 2 — AUDIT (#page-audit)                   ░░ -->
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <section id="page-audit" class="page page-hidden flex flex-col gap-5">
+
+      <!-- Page nav -->
+      <div class="flex items-center justify-between gap-3">
+        <button onclick="showPage('intake')"
+                class="text-xs font-bold text-amber-700 bg-white border border-amber-200 hover:bg-amber-50 px-4 py-2 rounded-xl transition-all shadow-sm">
+          ← Back to Intake
+        </button>
+        <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Step 2 — Compliance Audit</span>
+      </div>
 
       <!-- ─── Phase 2 Output — Inspected & Highlighted Text ── -->
       <!--
@@ -415,6 +1074,39 @@
         <div id="remediation-pills" class="flex flex-wrap gap-2"></div>
       </div>
 
+      <!-- ─── PHASE 4 — AI Optimization trigger (advances to Delivery) ── -->
+      <div id="purify-section" class="hidden card bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+        <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">
+          Phase 4 — AI Optimization (AI优化)
+        </h2>
+        <button
+          onclick="optimizeAndPolish()"
+          class="w-full bg-gradient-to-r from-amber-400 to-amber-500
+                 hover:from-amber-500 hover:to-amber-600
+                 text-white font-bold py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm">
+          【✨ Optimize &amp; Polish Document → Delivery】
+        </button>
+      </div>
+
+    </section><!-- /PAGE 2 AUDIT -->
+
+
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <!-- ░░  PAGE 3 — DELIVERY (#page-delivery)             ░░ -->
+    <!-- ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░ -->
+    <section id="page-delivery" class="page page-hidden flex flex-col gap-5">
+
+      <!-- Page nav -->
+      <div class="flex items-center justify-between gap-3">
+        <button onclick="showPage('audit')"
+                class="text-xs font-bold text-amber-700 bg-white border border-amber-200 hover:bg-amber-50 px-4 py-2 rounded-xl transition-all shadow-sm">
+          ← Back to Audit
+        </button>
+        <button onclick="startOver()"
+                class="text-xs font-bold text-amber-700 bg-white border border-amber-200 hover:bg-amber-50 px-4 py-2 rounded-xl transition-all shadow-sm">
+          ↻ Start Over
+        </button>
+      </div>
 
       <!-- ─── Phase 4 Output — Multi-Tab Parallel Delivery ───── -->
       <!--
@@ -449,18 +1141,65 @@
             <button id="copy-checkapaw" onclick="copyOptimizedVersion('checkapaw')" class="mt-3 w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2.5 rounded-2xl transition-all text-sm">📋 Copy This Version</button>
           </div>
         </div>
+
+        <!-- Utility: export the playful "Compliance Passport" certificate -->
+        <button onclick="openPassport()"
+                class="w-full font-bold text-white py-3 rounded-2xl transition-all shadow-md hover:shadow-lg text-sm"
+                style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 60%, #b45309 100%); box-shadow: 0 6px 18px rgba(245,158,11,0.35);">
+          🎫 Export Pass Certificate
+        </button>
       </div>
 
-    </div><!-- /RIGHT PANE -->
+    </section><!-- /PAGE 3 DELIVERY -->
 
   </main><!-- /MAIN -->
 
 
   <!-- ═══════════════════════════════════════════════════════
-       JAVASCRIPT ENGINE
-       All logic is self-contained below in one <script> block.
-       Functions are modular and heavily commented for clarity.
+       FOOTER — Data Privacy & Security Disclaimer
        ═══════════════════════════════════════════════════════ -->
+  <footer class="max-w-screen-xl mx-auto px-4 sm:px-6 pb-8">
+    <div class="bg-white rounded-3xl p-5 shadow-sm border border-amber-100">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-lg select-none">🔒</span>
+        <h2 class="text-xs font-bold text-amber-600 uppercase tracking-widest">
+          Data Privacy &amp; Security Disclaimer
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600 leading-relaxed">
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+          <p class="font-bold text-amber-700 mb-1">🐾 On-Device Processing</p>
+          <p>Check-A-Paw runs its compliance scans locally in your browser. Your pasted text, uploaded documents, and custom dictionaries are <strong>not stored on our servers</strong> and never leave your device during a local scan.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+          <p class="font-bold text-amber-700 mb-1">🤖 Third-Party AI Models</p>
+          <p>When you select an external LLM (e.g. OpenAI, Anthropic, Google), your content may be transmitted to that provider for analysis under <strong>their</strong> privacy and data-retention policies. Review the provider's terms before submitting sensitive data.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+          <p class="font-bold text-amber-700 mb-1">⚖️ Not Legal Advice</p>
+          <p>Compliance results are automated suggestions to support human review — <strong>not a substitute for professional legal counsel</strong>. Always confirm flagged items with your legal or compliance team before publishing.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-100 rounded-2xl px-4 py-3">
+          <p class="font-bold text-amber-700 mb-1">🛡️ Your Responsibility</p>
+          <p>Do not upload regulated, classified, or personally identifiable information (PII) unless your organization has approved the chosen AI model. You remain responsible for handling data in line with GDPR, CCPA, and your internal policies.</p>
+        </div>
+      </div>
+
+      <p class="text-xs text-amber-400 mt-3 text-center">
+        By using Check-A-Paw you acknowledge this disclaimer. 🐾 No data is sold or shared for advertising.
+      </p>
+    </div>
+  </footer>
+
+
+  <!-- ═══════════════════════════════════════════════════════
+       JAVASCRIPT ENGINE
+       Compliance dictionary data lives in dictionaries.js and is
+       loaded first so WEIGHT_DICTIONARIES and SUGGESTIONS are
+       available to the application logic below.
+       ═══════════════════════════════════════════════════════ -->
+  <script src="dictionaries.js?v=2"></script>
   <script>
   'use strict';
 
@@ -482,195 +1221,272 @@
   let optimizedOutputs  = { creative: '', conservative: '', checkapaw: '' }; // Last generated outputs
   let scanDelayTimer    = null;        // Timeout handle for delayed scan rendering
 
+  // ── Compliance Passport metadata (captured at scan time) ──
+  let auditDocName        = 'Pasted Document'; // Source document label
+  let auditTimestamp      = null;              // Date of the latest audit scan
+  let auditPeakViolations = 0;                 // Highest violation count seen this session
+
+  // ── Custom Compliance Dictionary (user-uploaded rules) ────
+  // Keyword phrase → { severity: 'red'|'yellow', reason: string }.
+  // Merged on top of the built-in role dictionaries at full severity.
+  let customDictionary = {};
+
+  // ── AI model selection (which LLM powers the audit) ───────
+  let selectedModel = 'auto';
+
 
   // ──────────────────────────────────────────────────────────
-  // WEIGHTED CONTEXTUAL DICTIONARIES
+  // MULTI-PAGE STATE MACHINE
   //
-  // This object is the heart of Optimization 1. Each role maps keyword
-  // phrases to an object with:
-  //   - severity: "red" (critical) or "yellow" (contextual warning)
-  //   - reason: plain-language legal/policy rationale shown to humans
-  //
-  // IMPORTANT: The required canonical entries requested by product are
-  // preserved exactly and can be safely extended with realistic extras.
+  // The app is a three-step flow: Intake → Audit → Delivery.
+  // Each step is a <section class="page"> container. showPage()
+  // cross-fades between them and keeps the step tracker in sync.
   // ──────────────────────────────────────────────────────────
 
-  const WEIGHT_DICTIONARIES = {
-    marketing: {
-      'miracle':             { severity: 'red',    reason: 'Unverified health/performance claim' },
-      'best in class':       { severity: 'red',    reason: 'FTC compliance violation regarding unsubstantiated superlatives' },
-      'cheapest':            { severity: 'red',    reason: 'FTC compliance violation regarding unsubstantiated superlatives' },
-      '100% guaranteed':     { severity: 'red',    reason: 'Deceptive commercial practice risk under consumer protection law' },
-      'risk-free':           { severity: 'red',    reason: 'Deceptive commercial practice risk under consumer protection law' },
-      'officially certified':{ severity: 'yellow', reason: 'Requires strict institutional credentials.' },
-      'government approved': { severity: 'yellow', reason: 'Requires strict institutional credentials.' },
-      'top-tier':            { severity: 'yellow', reason: 'Requires verifiable benchmarks for comparative advertising.' }
-    },
-    pm: {
-      'track user behavior': { severity: 'red',    reason: 'GDPR Article 6 Non-compliance' },
-      'without consent':     { severity: 'red',    reason: 'CCPA opt-out workflow breach' },
-      'save credentials':    { severity: 'red',    reason: 'Critical OWASP data security vulnerability' },
-      'track user location': { severity: 'yellow', reason: 'Location data collection requires explicit opt-in and retention policy.' },
-      'instant loading':     { severity: 'yellow', reason: 'Unrealistic technical SLA commitment in PRDs.' }
-    },
-    policy: {
-      'massive crackdown':   { severity: 'red',    reason: 'Aggressive public relations phrasing; highly sensitive tone' },
-      'regime\'s propaganda':{ severity: 'red',    reason: 'Inflammatory geopolitical stance; major corporate neutrality risk' },
-      'total ban':           { severity: 'red',    reason: 'Extreme qualitative language lacking diplomatic ambiguity' },
-      'completely overhaul': { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' },
-      'destroy market competitors': { severity: 'yellow', reason: 'Unstable, hostile corporate tone for public memos.' }
+  const PAGE_ORDER = ['intake', 'audit', 'delivery'];
+  let currentPage   = 'intake';        // Currently visible page key
+  let pageAnimTimer = null;            // Guards overlapping page transitions
+  let ingestTimer   = null;            // Interval handle for the upload/OCR sim
+
+  // Canned "extracted" document used by the simulated parser. It intentionally
+  // contains violations for all three roles so the audit always has something
+  // meaningful to flag after the sandbox confirmation.
+  const DEMO_DOCUMENT =
+    "Introducing our miracle weight-loss solution — the cheapest, best in class " +
+    "product with 100% guaranteed, risk-free results! We track user behavior and " +
+    "save credentials without consent to personalise your journey. This massive " +
+    "crackdown against the regime's propaganda will lead to a total ban on " +
+    "censorship of radical voices.";
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: showPage(target)
+  //
+  // Smoothly transitions from the current page to `target`.
+  // Fades the current page out, swaps display, then fades the
+  // next one in on the following frame so the CSS transition runs.
+  // ══════════════════════════════════════════════════════════
+  function showPage(target) {
+    if (!PAGE_ORDER.includes(target) || target === currentPage) return;
+
+    const cur  = document.getElementById('page-' + currentPage);
+    const next = document.getElementById('page-' + target);
+    if (!next) return;
+
+    clearTimeout(pageAnimTimer);
+
+    // Fade the current page out…
+    if (cur) cur.classList.add('page-leaving');
+
+    pageAnimTimer = setTimeout(() => {
+      if (cur) {
+        cur.classList.add('page-hidden');
+        cur.classList.remove('page-leaving');
+      }
+
+      // …then reveal the next page starting from the faded state.
+      next.classList.remove('page-hidden');
+      next.classList.add('page-leaving');
+      // Two RAFs guarantee the browser paints the hidden state before we
+      // remove it, so the opacity/translate transition actually animates.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => next.classList.remove('page-leaving'));
+      });
+
+      currentPage = target;
+      updateStepTracker();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, cur ? 300 : 0);
+  }
+
+  // Reflects the active / completed steps in the breadcrumb tracker.
+  function updateStepTracker() {
+    const idx = PAGE_ORDER.indexOf(currentPage);
+    document.querySelectorAll('#step-tracker .step-dot').forEach(dot => {
+      const di = PAGE_ORDER.indexOf(dot.dataset.step);
+      dot.classList.toggle('step-active', di === idx);
+      dot.classList.toggle('step-done',   di < idx);
+    });
+  }
+
+  // Advance from Intake to Audit (used by the "Sniff Out Risks" button and
+  // by the sandbox confirmation). Validates input before transitioning.
+  function goToAudit() {
+    const txt = document.getElementById('input-text').value.trim();
+    if (!txt) { showToast('🐾 Please paste or upload a document first!', 'warning'); return; }
+    if (!activeRole) { showToast('🐾 Please select a Role Tag first!', 'warning'); return; }
+    proceedToAudit();
+  }
+
+  // Shared hand-off: switch to the Audit page, then run the scan once the
+  // transition has settled so the highlighted output animates into view.
+  function proceedToAudit() {
+    showPage('audit');
+    setTimeout(() => sniffOutRisks(), 360);
+  }
+
+  // Returns the user to the Intake page to begin a fresh document.
+  function startOver() {
+    auditPeakViolations = 0;
+    auditTimestamp = null;
+    auditDocName = 'Pasted Document';
+    showPage('intake');
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FILE INGESTION — simulated upload + OCR/parse sequence
+  //
+  // When a file is dropped or chosen we DON'T jump straight to the
+  // audit. Instead we animate a two-phase progress bar (upload →
+  // OCR/parse) and then open the Pre-Parsing Confirmation Sandbox.
+  // ══════════════════════════════════════════════════════════
+  function handleFileSelection(fileList) {
+    const file = fileList && fileList[0];
+    if (!file) return;
+    if (!activeRole) {
+      showToast('🐾 Pick a Role Tag first so I know what to sniff for!', 'warning');
     }
-  };
+    runIngestSequence(file);
+  }
+
+  function runIngestSequence(file) {
+    clearInterval(ingestTimer);
+
+    const isImage = !!(file.type && file.type.startsWith('image/'));
+    const wrap   = document.getElementById('upload-progress-wrap');
+    const bar    = document.getElementById('upload-progress-bar');
+    const status = document.getElementById('upload-progress-status');
+    const nameEl = document.getElementById('upload-file-name');
+    const pctEl  = document.getElementById('upload-progress-pct');
+
+    // Reveal + reset the progress UI
+    wrap.classList.remove('hidden');
+    nameEl.textContent = file.name || (isImage ? 'scanned-image.png' : 'document.txt');
+    bar.style.width    = '0%';
+    pctEl.textContent  = '0%';
+    bar.classList.remove('bg-green-500');
+    bar.classList.add('bg-amber-500');
+    status.textContent = isImage ? '📤 Uploading image…' : '📤 Uploading document…';
+
+    // Shiba starts sniffing while we work
+    setShibaState('processing');
+    document.getElementById('shiba-avatar').classList.add('sniffing');
+
+    let pct   = 0;
+    let phase = 'upload';            // 'upload' → 'parse'
+
+    ingestTimer = setInterval(() => {
+      pct += isImage ? 4 : 6;
+
+      if (pct >= 100) {
+        pct = 100;
+        bar.style.width   = '100%';
+        pctEl.textContent = '100%';
+
+        if (phase === 'upload') {
+          // Transition into the OCR / parse phase
+          phase = 'parse';
+          pct   = 0;
+          bar.style.width = '0%';
+          bar.classList.remove('bg-amber-500');
+          bar.classList.add('bg-green-500');
+          status.textContent = isImage
+            ? '🔬 Running OCR scan on the image…'
+            : '🧩 Parsing document structure…';
+          return;
+        }
+
+        // Parse complete → open the confirmation sandbox
+        clearInterval(ingestTimer);
+        document.getElementById('shiba-avatar').classList.remove('sniffing');
+        status.textContent = '✅ Extraction complete!';
+
+        openParserSandbox({
+          fileName:      nameEl.textContent,
+          fileIcon:      isImage ? '🖼️' : '📄',
+          fileMeta:      isImage ? 'Image • OCR text layer extracted' : 'Document • text layer parsed',
+          extractedText: buildSimulatedExtraction(file, isImage)
+        });
+        return;
+      }
+
+      bar.style.width   = pct + '%';
+      pctEl.textContent = pct + '%';
+    }, 70);
+  }
+
+  // Produces the simulated raw string the "AI parser" extracted.
+  function buildSimulatedExtraction(file, isImage) {
+    const source = (file && file.name) || (isImage ? 'image' : 'document');
+    const header = isImage
+      ? '[OCR extraction · ' + source + ']\n\n'
+      : '[Parsed text · ' + source + ']\n\n';
+    return header + DEMO_DOCUMENT;
+  }
 
 
-  // ──────────────────────────────────────────────────────────
-  // SUGGESTIONS MAP
+  // ══════════════════════════════════════════════════════════
+  // PRE-PARSING CONFIRMATION SANDBOX
   //
-  // Provides creative (engagement-optimised) and conservative
-  // (legally-safe) alternatives for each flagged keyword.
-  // A generic '_fallback' entry is used when no specific match exists.
+  // openParserSandbox(...) freezes the screen and fades in the modal
+  // so the hooman can verify the extracted text before the deep audit.
+  // ══════════════════════════════════════════════════════════
+  function openParserSandbox(opts) {
+    const {
+      fileName      = 'document.pdf',
+      fileIcon      = '📄',
+      fileMeta      = 'Source file • ready to parse',
+      extractedText = ''
+    } = opts || {};
+
+    document.getElementById('sandbox-file-icon').textContent = fileIcon;
+    document.getElementById('sandbox-file-name').textContent = fileName;
+    document.getElementById('sandbox-file-meta').textContent = fileMeta;
+    document.getElementById('sandbox-raw-text').textContent  =
+      extractedText || '(No text could be extracted from this source.)';
+
+    const modal = document.getElementById('parser-sandbox');
+    const card  = document.getElementById('parser-sandbox-card');
+
+    // Make it interactive, then fade/scale in on the next frame so the
+    // CSS transition runs (can't transition from display:none / opacity-0).
+    modal.classList.remove('pointer-events-none');
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      card.classList.remove('scale-95');
+    });
+  }
+
+  // Wired to the [🐾 Looks Perfect, Run Audit!] button.
+  // Hides the sandbox, pushes the verified text into the pipeline,
+  // then smoothly transitions to the Audit page.
+  function confirmParseAndAudit() {
+    const modal = document.getElementById('parser-sandbox');
+    const card  = document.getElementById('parser-sandbox-card');
+    const raw   = document.getElementById('sandbox-raw-text').textContent;
+
+    // Fade the modal back out…
+    modal.classList.add('opacity-0');
+    card.classList.add('scale-95');
+    modal.classList.add('pointer-events-none');
+
+    // …then hand off to the audit once the fade finishes.
+    setTimeout(() => {
+      const input = document.getElementById('input-text');
+      if (input) input.value = raw;
+      proceedToAudit();
+    }, 300);
+  }
+
+
   // ──────────────────────────────────────────────────────────
-
-  const SUGGESTIONS = {
-
-    /* ---- Marketing ---------------------------------------- */
-    'best': {
-      creative:     'among the top-rated',
-      conservative: 'highly regarded in independent evaluations'
-    },
-    'fastest': {
-      creative:     'exceptionally quick',
-      conservative: 'designed for high-speed performance'
-    },
-    '100% guaranteed': {
-      creative:     'backed by our satisfaction commitment',
-      conservative: 'subject to our terms-based satisfaction policy'
-    },
-    'miracle': {
-      creative:     'remarkably effective',
-      conservative: 'clinically-informed, evidence-based solution'
-    },
-    'risk-free': {
-      creative:     'worry-free trial available',
-      conservative: 'subject to stated return-policy conditions'
-    },
-    'cheapest': {
-      creative:     'exceptional value for money',
-      conservative: 'competitively priced within market benchmarks'
-    },
-    'unbeatable': {
-      creative:     'outstanding, hard-to-match value',
-      conservative: 'subject to comparative market analysis'
-    },
-    'best in class': {
-      creative:     'a leading option in its category',
-      conservative: 'independently benchmarked within its segment'
-    },
-    'number one': {
-      creative:     'a top-performing option',
-      conservative: 'among the leading providers as measured by [source]'
-    },
-    'number 1': {
-      creative:     'a top-performing option',
-      conservative: 'among the leading providers as measured by [source]'
-    },
-    'overnight results': {
-      creative:     'rapid, noticeable results',
-      conservative: 'results may vary; see clinical data for timelines'
-    },
-
-    /* ---- Product Manager ---------------------------------- */
-    'track user': {
-      creative:     'analyse engagement patterns',
-      conservative: 'collect anonymised interaction data with user consent'
-    },
-    'track user behavior': {
-      creative:     'analyse engagement patterns with transparent permissions',
-      conservative: 'collect behavioural analytics only with explicit lawful consent'
-    },
-    'sell data': {
-      creative:     'share anonymised insights with trusted partners',
-      conservative: 'transfer de-identified aggregate data to authorised third parties under Data Processing Agreements'
-    },
-    'without consent': {
-      creative:     'with streamlined, one-tap permissions',
-      conservative: 'only upon obtaining explicit informed consent per applicable privacy regulations'
-    },
-    'location tracking': {
-      creative:     'location-based personalisation (opt-in)',
-      conservative: 'geolocation services activated only with explicit opt-in consent'
-    },
-    'save credentials': {
-      creative:     'enable secure remembered login',
-      conservative: 'store authentication tokens using industry-standard encryption'
-    },
-    'collect data': {
-      creative:     'gather usage insights',
-      conservative: 'process personal data in accordance with our Privacy Policy and applicable law'
-    },
-    'monitor': {
-      creative:     'review for quality assurance',
-      conservative: 'conduct audited oversight with documented justification'
-    },
-    'harvest data': {
-      creative:     'aggregate platform signals',
-      conservative: 'collect data under explicit consent and data-minimisation principles'
-    },
-
-    /* ---- Policy ------------------------------------------- */
-    'regime': {
-      creative:     'administration',
-      conservative: 'governing authority'
-    },
-    'propaganda': {
-      creative:     'messaging campaign',
-      conservative: 'official communications'
-    },
-    'regime\'s propaganda': {
-      creative:     'state messaging campaign',
-      conservative: 'government communications narrative'
-    },
-    'censorship': {
-      creative:     'content moderation',
-      conservative: 'regulated content governance framework'
-    },
-    'total ban': {
-      creative:     'comprehensive restriction',
-      conservative: 'regulatory prohibition subject to due process'
-    },
-    'absolute ban': {
-      creative:     'blanket restriction',
-      conservative: 'unconditional regulatory prohibition'
-    },
-    'massive crackdown': {
-      creative:     'significant enforcement initiative',
-      conservative: 'structured enforcement measures'
-    },
-    'extremist': {
-      creative:     'fringe',
-      conservative: 'individuals holding views outside established norms'
-    },
-    'radical': {
-      creative:     'unconventional',
-      conservative: 'non-mainstream'
-    },
-
-    /* ---- Shared base --------------------------------------- */
-    'fraud': {
-      creative:     'deceptive conduct',
-      conservative: 'conduct prohibited under applicable fraud statutes'
-    },
-    'illegal': {
-      creative:     'non-compliant',
-      conservative: 'in violation of applicable laws and regulations'
-    },
-
-    /* ---- Generic fallback (used when no specific entry exists) */
-    '_fallback': {
-      creative:     '[consider a more nuanced creative alternative]',
-      conservative: '[consult legal counsel for compliant phrasing]'
-    }
-  };
+  // WEIGHTED CONTEXTUAL DICTIONARIES & SUGGESTIONS
+  //
+  // The rule data (WEIGHT_DICTIONARIES and SUGGESTIONS) now lives in
+  // the separate dictionaries.js file, loaded just before this script.
+  // Both constants are available here via the shared global scope.
+  // ──────────────────────────────────────────────────────────
 
 
   // ──────────────────────────────────────────────────────────
@@ -743,7 +1559,12 @@
     const state = SHIBA_STATES[stateName];
     if (!state) return;
 
-    document.getElementById('shiba-avatar').textContent  = state.emoji;
+    // The avatar is now an image, so the dog glyphs are stripped and only
+    // the mood emoji (🔎/🚫/🎉/💡/🤔) is shown as a small corner badge.
+    const moodEmoji = state.emoji.replace(/🐕|🐶/g, '').trim();
+    const emojiEl = document.getElementById('shiba-emoji');
+    if (emojiEl) emojiEl.textContent = moodEmoji;
+
     document.getElementById('shiba-dialogue').textContent = state.dialogue;
     document.getElementById('shiba-badge').textContent    = state.badge;
   }
@@ -759,12 +1580,9 @@
   function setActiveRole(role, shouldRescan = true) {
     activeRole = role;
 
-    // Remove active styling from all tabs, then apply to the chosen one
-    document.querySelectorAll('.role-tab').forEach(btn => {
-      btn.classList.remove('tab-active');
-    });
-    const chosenBtn = document.querySelector(`.role-tab[data-role="${role}"]`);
-    if (chosenBtn) chosenBtn.classList.add('tab-active');
+    // Keep the dropdown in sync (e.g. when set programmatically on load)
+    const roleSelect = document.getElementById('role-select');
+    if (roleSelect && roleSelect.value !== role) roleSelect.value = role;
 
     // Inform the user what the active role's dictionary targets
     const descriptions = {
@@ -817,7 +1635,248 @@
       });
     });
 
+    // User-uploaded custom rules apply in EVERY role at full severity and
+    // override any built-in entry for the same term.
+    Object.entries(customDictionary).forEach(([keyword, meta]) => {
+      if (whitelist.has(keyword.toLowerCase())) return;
+      contextual[keyword] = { ...meta };
+    });
+
     return contextual;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // CUSTOM COMPLIANCE DICTIONARY
+  //
+  // Lets users upload their own keyword rules (JSON or CSV) that the
+  // scanner layers on top of the built-in role dictionaries.
+  // ══════════════════════════════════════════════════════════
+
+  // Entry point from the dedicated dictionary drop-zone / picker.
+  function handleDictionaryFile(fileList) {
+    const file = fileList && fileList[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const rules = parseDictionaryText(String(reader.result || ''), file.name);
+        const count = Object.keys(rules).length;
+        if (!count) {
+          showToast('🐾 No valid rules found in that file. Check the format!', 'warning');
+          return;
+        }
+        applyCustomDictionary(rules, file.name);
+      } catch (err) {
+        showToast('⚠️ Could not parse that dictionary — please check JSON/CSV format.', 'warning');
+      }
+    };
+    reader.onerror = () => showToast('⚠️ Failed to read the dictionary file.', 'warning');
+    reader.readAsText(file);
+  }
+
+  // Parses either a JSON object/array or a CSV/TSV file into a normalised
+  // { term: { severity, reason } } map. Unknown severities default to yellow.
+  function parseDictionaryText(text, fileName) {
+    const rules = {};
+    const trimmed = text.trim();
+    const isJson = /\.json$/i.test(fileName) || trimmed.startsWith('{') || trimmed.startsWith('[');
+
+    const normaliseSeverity = sev => {
+      const s = String(sev || '').trim().toLowerCase();
+      if (['red', 'critical', 'high', 'block'].includes(s)) return 'red';
+      return 'yellow'; // default / warning / medium / low
+    };
+
+    const addRule = (term, severity, reason) => {
+      const key = String(term || '').trim();
+      if (!key) return;
+      rules[key] = {
+        severity: normaliseSeverity(severity),
+        reason: String(reason || '').trim() || 'Custom organisation rule'
+      };
+    };
+
+    if (isJson) {
+      const data = JSON.parse(trimmed);
+      if (Array.isArray(data)) {
+        // [{ term, severity, reason }, ...]
+        data.forEach(item => {
+          if (item && typeof item === 'object') {
+            addRule(item.term || item.keyword || item.word, item.severity, item.reason);
+          }
+        });
+      } else if (data && typeof data === 'object') {
+        // { term: { severity, reason } }  OR  { term: "red" }
+        Object.entries(data).forEach(([term, val]) => {
+          if (val && typeof val === 'object') {
+            addRule(term, val.severity, val.reason);
+          } else {
+            addRule(term, val, '');
+          }
+        });
+      }
+    } else {
+      // CSV / TSV — one rule per line: term, severity, reason
+      const lines = trimmed.split(/\r?\n/);
+      lines.forEach((line, idx) => {
+        if (!line.trim()) return;
+        const delimiter = line.includes('\t') ? '\t' : ',';
+        const cols = line.split(delimiter).map(c => c.trim().replace(/^["']|["']$/g, ''));
+        // Skip an optional header row
+        if (idx === 0 && /^(term|keyword|word)$/i.test(cols[0])) return;
+        addRule(cols[0], cols[1], cols.slice(2).join(', '));
+      });
+    }
+
+    return rules;
+  }
+
+  // Stores the parsed rules, updates the UI, and re-runs any active scan.
+  function applyCustomDictionary(rules, fileName) {
+    customDictionary = rules;
+    const count = Object.keys(rules).length;
+
+    // Reflect the loaded rules in the local KB ticker
+    knowledgeSynced += count;
+    renderDictionaryChips(fileName);
+    updateStats();
+
+    showToast(`📚 Loaded ${count} custom rule${count === 1 ? '' : 's'} — now sniffing for them too!`, 'success');
+
+    // If there's already text on screen, refresh the live analysis
+    if (document.getElementById('input-text').value.trim()) {
+      sniffOutRisks({ immediate: true, silentEmpty: true, preserveRoleState: true });
+    }
+  }
+
+  // Renders the loaded-terms preview (chips) + count badge.
+  function renderDictionaryChips(fileName) {
+    const wrap   = document.getElementById('dict-loaded-wrap');
+    const chips  = document.getElementById('dict-chips');
+    const badge  = document.getElementById('dict-count-badge');
+    const nameEl = document.getElementById('dict-loaded-name');
+    const entries = Object.entries(customDictionary);
+
+    if (!entries.length) {
+      wrap.classList.add('hidden');
+      badge.classList.add('hidden');
+      chips.innerHTML = '';
+      return;
+    }
+
+    if (fileName) nameEl.textContent = fileName;
+    badge.textContent = String(entries.length);
+    badge.classList.remove('hidden');
+    wrap.classList.remove('hidden');
+
+    chips.innerHTML = entries.map(([term, meta]) => {
+      const dot = meta.severity === 'red' ? '🔴' : '🟡';
+      return `<span class="text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1"
+                    title="${escapeHtml(meta.reason)}">${dot} ${escapeHtml(term)}</span>`;
+    }).join('');
+  }
+
+  // Removes all custom rules and restores the built-in dictionaries.
+  function clearCustomDictionary() {
+    const count = Object.keys(customDictionary).length;
+    customDictionary = {};
+    knowledgeSynced = Math.max(0, knowledgeSynced - count);
+    renderDictionaryChips();
+    updateStats();
+    showToast('🧹 Custom dictionary cleared — back to built-in rules.', 'info');
+
+    if (document.getElementById('input-text').value.trim()) {
+      sniffOutRisks({ immediate: true, silentEmpty: true, preserveRoleState: true });
+    }
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // AI MODEL SELECTION
+  //
+  // Stores which LLM the user wants to power the compliance audit
+  // and reflects the choice in the badge + description copy.
+  // ══════════════════════════════════════════════════════════
+
+  // Human-friendly labels + one-line summaries per model option.
+  const MODEL_INFO = {
+    'auto':              { label: '🤖 Auto',        desc: '🐾 Auto mode picks the best balance of speed and accuracy for compliance checks.' },
+    'gpt-4o':            { label: 'GPT-4o',         desc: '⚡ OpenAI GPT-4o — fast, multimodal, strong general compliance reasoning.' },
+    'gpt-4o-mini':       { label: 'GPT-4o mini',    desc: '💸 OpenAI GPT-4o mini — lightweight and cost-efficient for high-volume scans.' },
+    'gpt-4-turbo':       { label: 'GPT-4 Turbo',    desc: '🧠 OpenAI GPT-4 Turbo — deep reasoning for nuanced policy language.' },
+    'o1':                { label: 'o1',             desc: '🔬 OpenAI o1 — extended reasoning for complex regulatory edge cases.' },
+    'claude-opus-4':     { label: 'Claude Opus 4',  desc: '📚 Anthropic Claude Opus 4 — top-tier accuracy for long, sensitive documents.' },
+    'claude-sonnet-4':   { label: 'Claude Sonnet 4',desc: '⚖️ Anthropic Claude Sonnet 4 — balanced speed and rigor.' },
+    'claude-3-5-haiku':  { label: 'Claude 3.5 Haiku', desc: '🏃 Anthropic Claude 3.5 Haiku — quick, economical checks.' },
+    'gemini-2-5-pro':    { label: 'Gemini 2.5 Pro', desc: '🌐 Google Gemini 2.5 Pro — large-context analysis with strong grounding.' },
+    'gemini-2-5-flash':  { label: 'Gemini 2.5 Flash', desc: '⚡ Google Gemini 2.5 Flash — low-latency scans at scale.' },
+    'llama-4-maverick':  { label: 'Llama 4 Maverick', desc: '🦙 Meta Llama 4 Maverick — open-weight model for self-hosted privacy.' },
+    'llama-3-3-70b':     { label: 'Llama 3.3 70B',  desc: '🦙 Meta Llama 3.3 70B — capable open-weight option.' },
+    'mistral-large':     { label: 'Mistral Large',  desc: '🇪🇺 Mistral Large — EU-based provider, solid multilingual compliance.' },
+    'mixtral-8x22b':     { label: 'Mixtral 8x22B',  desc: '🧩 Mixtral 8x22B — efficient mixture-of-experts model.' },
+    'deepseek-v3':       { label: 'DeepSeek-V3',    desc: '🔎 DeepSeek-V3 — strong reasoning at competitive cost.' },
+    'grok-3':            { label: 'Grok 3',         desc: '🛰️ xAI Grok 3 — fast general-purpose analysis.' },
+    'command-r-plus':    { label: 'Command R+',     desc: '📑 Cohere Command R+ — tuned for enterprise retrieval and compliance.' }
+  };
+
+  function setSelectedModel(model) {
+    selectedModel = model || 'auto';
+    const info = MODEL_INFO[selectedModel] || MODEL_INFO['auto'];
+
+    const badge = document.getElementById('model-badge');
+    const desc  = document.getElementById('model-description');
+    if (badge) badge.textContent = (selectedModel === 'auto' ? '🤖 ' : '🤖 ') + info.label.replace(/^🤖\s*/, '');
+    if (desc)  desc.textContent  = info.desc;
+
+    // Remind the user about provider data handling for external models
+    if (selectedModel !== 'auto') {
+      showToast(`🤖 ${info.label} selected — review the provider's privacy policy before sending sensitive data.`, 'info');
+    } else {
+      showToast('🐾 Auto mode active — analysis stays local where possible.', 'success');
+    }
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // WELCOME / ONBOARDING TOUR
+  //
+  // First-time visitors see a guided 3-step intro. Once dismissed,
+  // a localStorage flag keeps the app concise on return visits.
+  // The header "❓ Tour" button replays it on demand.
+  // ══════════════════════════════════════════════════════════
+  const ONBOARD_KEY = 'checkapaw_onboarded';
+
+  // Safe localStorage access (file:// or privacy modes can throw)
+  function hasOnboarded() {
+    try { return localStorage.getItem(ONBOARD_KEY) === '1'; }
+    catch (e) { return false; }
+  }
+
+  function showWelcome() {
+    const modal = document.getElementById('welcome-modal');
+    const card  = document.getElementById('welcome-card');
+    if (!modal) return;
+    modal.classList.remove('pointer-events-none');
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      card.classList.remove('scale-95');
+    }));
+  }
+
+  function dismissWelcome() {
+    const modal = document.getElementById('welcome-modal');
+    const card  = document.getElementById('welcome-card');
+    modal.classList.add('opacity-0');
+    card.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+    try { localStorage.setItem(ONBOARD_KEY, '1'); } catch (e) { /* ignore */ }
+  }
+
+  // Header button: re-open the tour even after onboarding.
+  function replayTour() {
+    showWelcome();
   }
 
 
@@ -965,6 +2024,14 @@
       // Store the original text so Phase 4 can use it
       lastScanOriginal = rawText;
 
+      // Capture audit metadata for the Compliance Passport certificate
+      auditTimestamp = new Date();
+      auditPeakViolations = Math.max(auditPeakViolations, activeFlagCount);
+      const progWrap = document.getElementById('upload-progress-wrap');
+      auditDocName = (progWrap && !progWrap.classList.contains('hidden'))
+        ? document.getElementById('upload-file-name').textContent
+        : 'Pasted Document';
+
       // Update the live stats ticker
       updateStats();
 
@@ -1084,30 +2151,381 @@
 
 
   // ══════════════════════════════════════════════════════════
+  // FUNCTION: getEnrichedEntry(keyword)
+  //
+  // Looks up the deep-knowledge record for a keyword inside the
+  // ENRICHED_COMPLIANCE_DICTIONARY (loaded from dictionaries.js).
+  // The enriched object is keyed by role → keyword, so we scan every
+  // role and return the first match. Returns null when no record
+  // exists, letting the popover fall back to the lightweight layout.
+  // ══════════════════════════════════════════════════════════
+  function getEnrichedEntry(keyword) {
+    if (typeof ENRICHED_COMPLIANCE_DICTIONARY === 'undefined' || !keyword) return null;
+    const key = keyword.toLowerCase();
+    for (const role of Object.keys(ENRICHED_COMPLIANCE_DICTIONARY)) {
+      const roleMap = ENRICHED_COMPLIANCE_DICTIONARY[role];
+      if (roleMap && roleMap[key]) return roleMap[key];
+    }
+    return null;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // COMPLIANCE KNOWLEDGE BASE SEARCH  (Page 1 — #page-intake)
+  //
+  // Lets team members research policy rules straight from the
+  // ENRICHED_COMPLIANCE_DICTIONARY without running an audit. Matches
+  // are scored across every role on keyword, topic, regulatory code,
+  // verticals, and the short_description, then rendered as cards.
+  // ══════════════════════════════════════════════════════════
+  function searchKnowledgeBase(rawQuery) {
+    const resultsEl = document.getElementById('kb-results');
+    const emptyEl   = document.getElementById('kb-empty');
+    if (!resultsEl || !emptyEl) return;
+
+    const query = (rawQuery || '').trim().toLowerCase();
+
+    // Empty query → reset to the prompt state.
+    if (!query) {
+      resultsEl.innerHTML = '';
+      emptyEl.classList.remove('hidden');
+      emptyEl.textContent = 'Start typing to explore the compliance knowledge base.';
+      return;
+    }
+
+    const matches = [];
+    if (typeof ENRICHED_COMPLIANCE_DICTIONARY !== 'undefined') {
+      Object.entries(ENRICHED_COMPLIANCE_DICTIONARY).forEach(([role, roleMap]) => {
+        Object.entries(roleMap || {}).forEach(([keyword, entry]) => {
+          const haystack = [
+            keyword,
+            entry.topic,
+            entry.code,
+            entry.short_description,
+            Array.isArray(entry.verticals) ? entry.verticals.join(' ') : ''
+          ].join(' ').toLowerCase();
+
+          if (haystack.includes(query)) {
+            matches.push({ role, keyword, entry });
+          }
+        });
+      });
+    }
+
+    // No matches → friendly empty state.
+    if (!matches.length) {
+      resultsEl.innerHTML = '';
+      emptyEl.classList.remove('hidden');
+      emptyEl.textContent = `No knowledge-base entries match “${rawQuery.trim()}”. Try a broader term like “Privacy” or “GDPR”.`;
+      return;
+    }
+
+    emptyEl.classList.add('hidden');
+    resultsEl.innerHTML = matches.map(buildKnowledgeCard).join('');
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // MICROSOFT IQ INTEGRATION — FOUNDRY IQ
+  // FUNCTION: askFoundryIQ()
+  //
+  // Sends the knowledge-base search box text to our Azure Function
+  // proxy (/api/complianceGround), which grounds the answer in the
+  // Foundry IQ knowledge base and returns citations. The API key lives
+  // server-side only — the browser never sees it. Degrades gracefully:
+  // if the Function is unreachable or unconfigured, the local dictionary
+  // search above still works as a fallback.
+  // ══════════════════════════════════════════════════════════
+  const FOUNDRY_IQ_ENDPOINT = '/api/complianceGround';
+
+  async function askFoundryIQ() {
+    const input   = document.getElementById('kb-search-input');
+    const btn     = document.getElementById('foundry-iq-btn');
+    const panel   = document.getElementById('foundry-iq-panel');
+    const kbEl    = document.getElementById('foundry-iq-kb');
+    const ansEl   = document.getElementById('foundry-iq-answer');
+    const citesEl = document.getElementById('foundry-iq-citations');
+    if (!input || !btn || !panel || !ansEl) return;
+
+    const query = (input.value || '').trim();
+    if (!query) {
+      panel.classList.remove('hidden');
+      kbEl.textContent = '';
+      citesEl.innerHTML = '';
+      ansEl.innerHTML = '<span class="text-indigo-500 italic">Type a compliance question above, then ask Foundry IQ.</span>';
+      return;
+    }
+
+    // Loading state
+    panel.classList.remove('hidden');
+    kbEl.textContent = '';
+    citesEl.innerHTML = '';
+    ansEl.innerHTML = '<span class="text-indigo-500 italic">✨ Grounding your question in the Foundry IQ knowledge base…</span>';
+    btn.disabled = true;
+    btn.classList.add('opacity-60', 'cursor-not-allowed');
+
+    try {
+      const res = await fetch(FOUNDRY_IQ_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query })
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const note = data && data.error ? data.error : `Foundry IQ returned status ${res.status}.`;
+        ansEl.innerHTML =
+          `<span class="text-indigo-600">${escapeHtml(note)}</span>` +
+          `<br><span class="text-xs text-indigo-400 italic">The local knowledge-base search above is still fully available.</span>`;
+        return;
+      }
+
+      kbEl.textContent = data.knowledgeBase ? `· ${data.knowledgeBase}` : '';
+      ansEl.innerHTML = escapeHtml(data.answer || 'No grounded answer was returned.');
+
+      const citations = Array.isArray(data.citations) ? data.citations : [];
+      if (citations.length) {
+        citesEl.innerHTML =
+          '<div class="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-1" style="font-size:0.6rem;">Sources</div>' +
+          citations.map((c, i) => {
+            const label = c.title || c.filepath || c.url || `Source ${i + 1}`;
+            return `<div class="text-xs text-indigo-700 bg-white border border-indigo-100 rounded-lg px-2 py-1">📄 ${escapeHtml(label)}</div>`;
+          }).join('');
+      }
+    } catch (err) {
+      ansEl.innerHTML =
+        '<span class="text-indigo-600">Couldn\'t reach Foundry IQ.</span>' +
+        '<br><span class="text-xs text-indigo-400 italic">Start the Azure Function (cd api &amp;&amp; func start), or keep using the local search above.</span>';
+    } finally {
+      btn.disabled = false;
+      btn.classList.remove('opacity-60', 'cursor-not-allowed');
+    }
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: buildKnowledgeCard({ role, keyword, entry })
+  //
+  // Renders one elegant knowledge-base result card: the flagged word,
+  // a severity badge, role + topic chips, the short_description, and
+  // the pre-baked creative / conservative alternatives.
+  // ══════════════════════════════════════════════════════════
+  function buildKnowledgeCard({ role, keyword, entry }) {
+    const isRed = String(entry.severity || '').toLowerCase() === 'red';
+    const sevCls = isRed
+      ? 'text-red-600 bg-red-50 border-red-200'
+      : 'text-yellow-600 bg-yellow-50 border-yellow-200';
+    const sevLabel = isRed ? '🔴 Red / Critical' : '🟡 Yellow / Contextual';
+
+    const roleLabel = role
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, c => c.toUpperCase());
+
+    const alts = entry.alternatives || {};
+    const altBlock = (label, cls, text) => text ? `
+        <div class="mt-2">
+          <div class="text-xs font-bold ${cls} mb-0.5">${label}</div>
+          <div class="text-xs text-gray-600 bg-gray-50 rounded-lg px-2 py-1.5 border border-gray-100 leading-relaxed">
+            "${escapeHtml(text)}"
+          </div>
+        </div>` : '';
+
+    return `
+      <div class="rounded-2xl border border-amber-100 bg-amber-50 p-4 flex flex-col">
+        <div class="flex items-start justify-between gap-2 mb-1.5">
+          <h3 class="text-sm font-extrabold text-amber-700 break-words">"${escapeHtml(keyword)}"</h3>
+          <span class="text-xs font-bold ${sevCls} border px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">${sevLabel}</span>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-1.5 mb-2">
+          <span class="text-xs font-semibold text-amber-600 bg-white border border-amber-100 rounded-full px-2 py-0.5">🧭 ${escapeHtml(roleLabel)}</span>
+          ${entry.topic ? `<span class="text-xs font-semibold text-indigo-600 bg-white border border-indigo-100 rounded-full px-2 py-0.5">📚 ${escapeHtml(entry.topic)}</span>` : ''}
+          ${entry.code ? `<span class="text-xs font-bold text-white bg-indigo-500 rounded-md px-2 py-0.5 whitespace-nowrap" style="font-family: ui-monospace, monospace; font-size: 0.6rem;">${escapeHtml(entry.code)}</span>` : ''}
+        </div>
+
+        ${entry.short_description ? `
+        <p class="text-xs text-gray-700 bg-white border border-amber-100 rounded-lg px-2.5 py-2 leading-relaxed">
+          ${escapeHtml(entry.short_description)}
+        </p>` : ''}
+
+        ${altBlock('🎨 Creative Alternative', 'text-purple-600', alts.creative)}
+        ${altBlock('⚖️ Conservative Alternative', 'text-blue-600', alts.conservative)}
+        ${altBlock('🐾 Check-A-Paw Style', 'text-amber-600', alts.check_a_paw)}
+      </div>
+    `;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: buildRegulatoryBreakdown(entry)
+  //
+  // Renders the "Regulatory Breakdown" knowledge card from an enriched
+  // dictionary entry — surfacing the compliance code, topic, affected
+  // verticals, and a cleanly formatted legal brief.
+  // ══════════════════════════════════════════════════════════
+  function buildRegulatoryBreakdown(entry) {
+    const verticals = Array.isArray(entry.verticals)
+      ? entry.verticals.map(v =>
+          `<span class="text-xs font-semibold text-indigo-600 bg-white border border-indigo-100 rounded-full px-2 py-0.5">${escapeHtml(v)}</span>`
+        ).join(' ')
+      : '';
+
+    return `
+      <div class="mb-3 rounded-xl border border-indigo-200 bg-indigo-50 p-2.5">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-xs font-extrabold tracking-widest text-indigo-500 uppercase" style="font-size: 0.62rem;">📚 Regulatory Breakdown</span>
+          ${entry.code ? `<span class="text-xs font-bold text-white bg-indigo-500 px-2 py-0.5 rounded-md whitespace-nowrap" style="font-size: 0.6rem; font-family: ui-monospace, monospace;">${escapeHtml(entry.code)}</span>` : ''}
+        </div>
+
+        ${entry.topic ? `
+        <div class="flex items-center gap-1.5 mb-2">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wide" style="font-size: 0.6rem;">Topic</span>
+          <span class="text-xs font-bold text-indigo-700">${escapeHtml(entry.topic)}</span>
+        </div>` : ''}
+
+        ${verticals ? `
+        <div class="flex flex-wrap items-center gap-1.5 mb-2">
+          <span class="text-xs font-bold text-gray-500 uppercase tracking-wide" style="font-size: 0.6rem;">Verticals</span>
+          ${verticals}
+        </div>` : ''}
+
+        ${entry.legal_brief ? `
+        <div class="text-xs text-gray-700 bg-white border border-indigo-100 rounded-lg px-2.5 py-2 leading-relaxed">
+          ${escapeHtml(entry.legal_brief)}
+        </div>` : ''}
+      </div>
+    `;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: buildRemediationChecklist(items, flagId)
+  //
+  // Renders the "🐾 Recommended Remediation Checklist". Every box must
+  // be ticked (see updateRemediationGate) before the override button
+  // unlocks, enforcing a deliberate human-in-the-loop remediation step.
+  // ══════════════════════════════════════════════════════════
+  function buildRemediationChecklist(items, flagId) {
+    const rows = items.map((item, i) => `
+      <label class="flex items-start gap-2 mb-1.5 cursor-pointer group">
+        <input type="checkbox"
+               class="remediation-check mt-0.5 cursor-pointer flex-shrink-0"
+               style="accent-color: #22c55e;"
+               data-flag="${escapeHtml(flagId)}"
+               onchange="updateRemediationGate('${escapeHtml(flagId)}')">
+        <span class="text-xs text-gray-600 leading-relaxed group-hover:text-gray-800">${escapeHtml(item)}</span>
+      </label>
+    `).join('');
+
+    return `
+      <div class="mb-3 rounded-xl border border-green-200 bg-green-50 p-2.5">
+        <div class="text-xs font-extrabold text-green-700 mb-2">🐾 Recommended Remediation Checklist</div>
+        ${rows}
+        <p class="text-xs text-gray-400 italic mt-1.5" id="remediation-hint-${escapeHtml(flagId)}">
+          Tick every box to unlock the override.
+        </p>
+      </div>
+    `;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: updateRemediationGate(flagId)
+  //
+  // Enables the override button only once every remediation checkbox
+  // for this flag is checked; otherwise keeps it disabled + greyed out.
+  // ══════════════════════════════════════════════════════════
+  function updateRemediationGate(flagId) {
+    const boxes = document.querySelectorAll(`.remediation-check[data-flag="${flagId}"]`);
+    const btn   = document.getElementById(`override-btn-${flagId}`);
+    const hint  = document.getElementById(`remediation-hint-${flagId}`);
+    if (!btn || !boxes.length) return;
+
+    const allChecked = Array.from(boxes).every(b => b.checked);
+    btn.disabled = !allChecked;
+
+    if (allChecked) {
+      btn.classList.remove('bg-gray-300', 'cursor-not-allowed');
+      btn.classList.add('bg-green-500', 'hover:bg-green-600', 'active:bg-green-700');
+      if (hint) {
+        hint.textContent = '✅ All steps acknowledged — override unlocked.';
+        hint.classList.remove('text-gray-400');
+        hint.classList.add('text-green-600');
+      }
+    } else {
+      btn.classList.add('bg-gray-300', 'cursor-not-allowed');
+      btn.classList.remove('bg-green-500', 'hover:bg-green-600', 'active:bg-green-700');
+      if (hint) {
+        hint.textContent = 'Tick every box to unlock the override.';
+        hint.classList.add('text-gray-400');
+        hint.classList.remove('text-green-600');
+      }
+    }
+  }
+
+
+  // ══════════════════════════════════════════════════════════
   // FUNCTION: buildPopover(keyword, tier)
   //
   // Phase 3, Step A — Constructs the inner HTML for the popover.
-  // Shows the tier badge, the flagged keyword, both recommendation
-  // paths (Creative + Conservative), and the Override button.
+  // Renders, top-to-bottom:
+  //   1. The tier badge + flagged keyword.
+  //   2. A stylized "Business Impact Weather Report" severity matrix
+  //      whose meters differ for RED LINE vs YELLOW RISK tokens.
+  //   3. (Enriched tokens) a "Regulatory Breakdown" knowledge card.
+  //   4. The plain-language explanation + both recommendation paths.
+  //   5. (Enriched tokens) a gated remediation checklist + Override.
   // ══════════════════════════════════════════════════════════
   function buildPopover(keyword, severity, reason, flagId) {
     // Look up suggestions; fall back to the generic entry if not found
     const suggestions = SUGGESTIONS[keyword] || SUGGESTIONS['_fallback'];
     const regulatoryTitle = getRegulatoryTitle(keyword, reason);
 
+    // Deep-knowledge record (topic / verticals / legal_brief / mitigation).
+    const enriched = getEnrichedEntry(keyword);
+
+    // Prefer enriched alternatives when present, falling back to SUGGESTIONS.
+    const creativeText     = (enriched && enriched.alternatives && enriched.alternatives.creative)     || suggestions.creative;
+    const conservativeText = (enriched && enriched.alternatives && enriched.alternatives.conservative) || suggestions.conservative;
+
     const tierLabel = severity === 'red' ? '🔴 Red / Critical'  : '🟡 Yellow / Contextual';
     const tierCls   = severity === 'red'
       ? 'text-red-600 bg-red-50 border-red-200'
       : 'text-yellow-600 bg-yellow-50 border-yellow-200';
+
+    // Enriched sections (rendered only when the dictionary supplies them).
+    const breakdownSection = enriched ? buildRegulatoryBreakdown(enriched) : '';
+    const hasChecklist = !!(enriched && Array.isArray(enriched.mitigation_strategies) && enriched.mitigation_strategies.length);
+    const checklistSection = hasChecklist
+      ? buildRemediationChecklist(enriched.mitigation_strategies, flagId)
+      : '';
+
+    // The override button is gated (disabled + grey) whenever a checklist
+    // is present; updateRemediationGate() unlocks it once all boxes tick.
+    const overrideBtn = `
+      <button id="override-btn-${escapeHtml(flagId)}"
+        class="w-full text-xs font-bold text-white py-2 px-3 rounded-xl transition-all shadow-sm ${hasChecklist
+          ? 'bg-gray-300 cursor-not-allowed'
+          : 'bg-green-500 hover:bg-green-600 active:bg-green-700'}"
+        ${hasChecklist ? 'disabled' : ''}
+        onclick="showJustificationSlip('${flagId}')">
+        [🐾 Override &amp; Whitelist Entry]
+      </button>`;
 
     // Build the popover HTML — escaping keyword for safe display
     return `
       <div class="text-xs font-bold ${tierCls} border px-2 py-1 rounded-lg mb-3 inline-block">
         ${tierLabel}
       </div>
-      <p class="text-sm font-bold text-amber-700 mb-2">
+      <p class="text-sm font-bold text-amber-700 mb-3">
         "${escapeHtml(keyword)}" ${escapeHtml(regulatoryTitle)}
       </p>
+
+      ${buildImpactMeter(severity)}
+
+      ${breakdownSection}
+
       <p class="text-xs text-gray-600 mb-3 bg-amber-50 border border-amber-100 rounded-lg px-2 py-2 leading-relaxed">
         Check-A-Paw flagged this because: ${escapeHtml(reason || 'Context-sensitive language requires reviewer validation.')}.
       </p>
@@ -1115,44 +2533,214 @@
       <div class="mb-2">
         <div class="text-xs font-bold text-purple-600 mb-1">🎨 Creative Recommendation</div>
         <div class="text-xs text-gray-600 bg-purple-50 rounded-lg px-2 py-1.5 border border-purple-100 leading-relaxed">
-          "${escapeHtml(suggestions.creative)}"
+          "${escapeHtml(creativeText)}"
         </div>
       </div>
 
       <div class="mb-3">
         <div class="text-xs font-bold text-blue-600 mb-1">⚖️ Conservative Recommendation</div>
         <div class="text-xs text-gray-600 bg-blue-50 rounded-lg px-2 py-1.5 border border-blue-100 leading-relaxed">
-          "${escapeHtml(suggestions.conservative)}"
+          "${escapeHtml(conservativeText)}"
         </div>
+      </div>
+
+      ${checklistSection}
+
+      ${overrideBtn}
+    `;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: buildImpactMeter(severity)
+  //
+  // Builds the "Business Impact Weather Report" — a stylized severity
+  // matrix shown at the top of every popover. RED LINE tokens get a
+  // fiery critical-impact card; YELLOW RISK tokens get a cautious
+  // public-opinion (舆情) warning card. Each card carries a labelled
+  // Tailwind progress bar plus a star-based burn/friction index.
+  // ══════════════════════════════════════════════════════════
+  function buildImpactMeter(severity) {
+    const isRed = severity === 'red';
+
+    // Per-tier content config keeps the markup below clean and declarative.
+    const cfg = isRed
+      ? {
+          card:      'bg-red-50 border-red-200',
+          badge:     'bg-red-500 text-white',
+          badgeText: '💥 CRITICAL IMPACT METER',
+          barLabel:  'Platform Takedown / Litigation Risk',
+          barValue:  '95%',
+          barWidth:  '95%',
+          barColor:  'bg-red-500',
+          starLabel: 'Legal Overtime Burn Rate',
+          stars:     '⭐️⭐️⭐️⭐️⭐️'
+        }
+      : {
+          card:      'bg-yellow-50 border-yellow-200',
+          badge:     'bg-yellow-500 text-white',
+          badgeText: '⚠️舆情 WARNING METER',
+          barLabel:  'Public Relations & Brand Friction',
+          barValue:  'Moderate',
+          barWidth:  '55%',
+          barColor:  'bg-yellow-500',
+          starLabel: 'Cross-Functional Friction Index',
+          stars:     '⭐️⭐️⭐️'
+        };
+
+    return `
+      <div class="mb-3 rounded-xl border ${cfg.card} p-2.5">
+        <div class="flex items-center justify-between gap-2 mb-2">
+          <span class="text-xs font-extrabold tracking-widest text-gray-500 uppercase" style="font-size: 0.62rem;">🌦️ Business Impact Weather Report</span>
+          <span class="text-xs font-extrabold px-2 py-0.5 rounded-full whitespace-nowrap ${cfg.badge}" style="font-size: 0.62rem;">${cfg.badgeText}</span>
+        </div>
+
+        <div class="mb-2">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-xs font-bold text-gray-600">${cfg.barLabel}</span>
+            <span class="text-xs font-extrabold text-gray-700">${cfg.barValue}</span>
+          </div>
+          <div class="w-full h-2 bg-white rounded-full overflow-hidden border border-gray-200">
+            <div class="h-full ${cfg.barColor} rounded-full transition-all duration-500" style="width: ${cfg.barWidth};"></div>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-gray-600">${cfg.starLabel}</span>
+          <span class="text-xs leading-none">${cfg.stars}</span>
+        </div>
+      </div>
+    `;
+  }
+
+
+
+  // ══════════════════════════════════════════════════════════
+  // AUDIT TRAIL — persistent HITL override log
+  //
+  // Every confirmed override is appended to window.checkAPawAuditTrail
+  // as a structured record { timestamp, word, justification } so the
+  // corporate compliance log survives for the life of the page session.
+  // ══════════════════════════════════════════════════════════
+  window.checkAPawAuditTrail = window.checkAPawAuditTrail || [];
+
+  // Tracks the justification tag chosen inside the in-tooltip slip,
+  // before the override is finally committed.
+  let pendingJustification = null;
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: showJustificationSlip(flagId)
+  //
+  // Phase 3, Step B-i — Instead of whitelisting instantly, transform
+  // the popover into a "Justification Slip": the reviewer must pick a
+  // binding compliance reason before the override can be committed.
+  // ══════════════════════════════════════════════════════════
+  function showJustificationSlip(flagId) {
+    const span = document.querySelector(`.flagged-word[data-id="${flagId}"]`);
+    if (!span) return;
+
+    const keyword = span.dataset.keyword || '';
+    pendingJustification = null; // reset any prior selection
+
+    const TAGS = [
+      '🏷️ Executive Level Waiver',
+      '🏷️ Target Audience Exempt',
+      '🏷️ Existing Legal Precedent'
+    ];
+
+    const pills = TAGS.map(tag => `
+      <button type="button"
+        class="justify-pill text-xs font-bold px-2.5 py-1 rounded-full border
+               border-yellow-200 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition-all"
+        onclick="selectJustification(this, '${escapeHtml(tag)}')">
+        ${tag}
+      </button>
+    `).join('');
+
+    document.getElementById('popover-content').innerHTML = `
+      <div class="text-xs font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-1 rounded-lg mb-2 inline-block">
+        📝 Audit Trail — Justification Slip
+      </div>
+      <p class="text-sm font-bold text-amber-700 mb-1">"${escapeHtml(keyword)}"</p>
+      <p class="text-xs text-gray-600 mb-3 leading-relaxed">
+        Select a binding compliance reason for overriding this rule:
+      </p>
+
+      <div class="flex flex-wrap gap-1.5 mb-3">
+        ${pills}
       </div>
 
       <button
         class="w-full text-xs font-bold bg-green-500 hover:bg-green-600 active:bg-green-700
                text-white py-2 px-3 rounded-xl transition-all shadow-sm"
-        onclick="overrideWord('${flagId}')">
-        [🐾 Override &amp; Ingest to Whitelist]
+        onclick="confirmOverride('${flagId}')">
+        [🐾 Confirm Override &amp; Ingest]
       </button>
     `;
   }
 
 
   // ══════════════════════════════════════════════════════════
-  // FUNCTION: overrideWord(flagId)
+  // FUNCTION: selectJustification(pillEl, tag)
+  //
+  // Highlights the chosen reason pill and stores the pending tag.
+  // ══════════════════════════════════════════════════════════
+  function selectJustification(pillEl, tag) {
+    pendingJustification = tag;
+    document.querySelectorAll('.justify-pill').forEach(p => {
+      p.classList.remove('bg-yellow-500', 'text-white', 'border-yellow-500');
+      p.classList.add('bg-yellow-50', 'text-yellow-700', 'border-yellow-200');
+    });
+    pillEl.classList.remove('bg-yellow-50', 'text-yellow-700', 'border-yellow-200');
+    pillEl.classList.add('bg-yellow-500', 'text-white', 'border-yellow-500');
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: confirmOverride(flagId)
+  //
+  // Commits the override only once a justification tag is selected,
+  // then delegates to overrideWord() which whitelists the token,
+  // updates the metrics, and writes the audit-trail record.
+  // ══════════════════════════════════════════════════════════
+  function confirmOverride(flagId) {
+    if (!pendingJustification) {
+      showToast('🐾 Please select a binding compliance reason first!', 'warning');
+      return;
+    }
+    overrideWord(flagId, pendingJustification);
+    pendingJustification = null;
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // FUNCTION: overrideWord(flagId, justification)
   //
   // Phase 3, Step B — Human-in-the-Loop override / whitelist flow:
   //
   //  1. Targets exactly one flagged span via its unique data-id.
   //  2. Adds that span's keyword into the whitelist Set.
   //  3. Converts only that flag into a green human-overridden marker.
-  //  4. Updates counters + toast + Shiba state transitions.
+  //  4. Updates counters, writes the audit-trail log, fires the toast,
+  //     and advances the Shiba state machine.
   // ══════════════════════════════════════════════════════════
-  function overrideWord(flagId) {
+  function overrideWord(flagId, justification) {
     if (!flagId) return;
     const span = document.querySelector(`.flagged-word[data-id="${flagId}"]`);
     if (!span) return;
 
     const keyword = (span.dataset.keyword || '').toLowerCase();
     if (!keyword) return;
+
+    // Quick overrides (e.g. from the remediation matrix) carry no slip.
+    const reason = justification || '🏷️ Quick Override (Remediation Matrix)';
+
+    // Capture the regulatory code (if the term has an enriched record) so
+    // the Compliance Passport can list every statute addressed this session.
+    const enriched = getEnrichedEntry(keyword);
+    const code = (enriched && enriched.code) || null;
+
     whitelist.add(keyword);
     knowledgeSynced += 1;
 
@@ -1167,10 +2755,18 @@
     activeFlagCount = Math.max(0, activeFlagCount - 1);
     overrideCount += 1;
 
+    // ── Append the structured record to the persistent audit trail ──
+    window.checkAPawAuditTrail.push({
+      timestamp:     new Date().toISOString(),
+      word:          keyword,
+      code:          code,
+      justification: reason
+    });
+
     updateStats();
     updateRemediationMatrix();
 
-    showToast('🐾 Check-A-Paw Whitelist Synced. Learning context...', 'success');
+    showToast('🐾 Audit Trail database synced! Override logged & whitelisted.', 'success');
 
     setShibaState('overrideTriggered');
 
@@ -1372,7 +2968,8 @@
     setOptimizationTab(optimizationTab || 'creative');
 
     setShibaState('polished');
-    document.getElementById('optimize-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Advance the state machine to the Delivery page.
+    showPage('delivery');
   }
 
 
@@ -1421,6 +3018,77 @@
 
 
   // ══════════════════════════════════════════════════════════
+  // FUNCTION: renderPassportCodes()
+  //
+  // Scans window.checkAPawAuditTrail for every distinct regulatory code
+  // (e.g. GDPR-ART-6-BREACH, FTC-15-255) addressed during the session and
+  // renders them as clean code-tag badges at the foot of the certificate.
+  // The section stays hidden when no coded rules were overridden.
+  // ══════════════════════════════════════════════════════════
+  function renderPassportCodes() {
+    const wrap = document.getElementById('passport-codes-wrap');
+    const list = document.getElementById('passport-codes');
+    if (!wrap || !list) return;
+
+    const trail = window.checkAPawAuditTrail || [];
+    const codes = [...new Set(trail.map(r => r && r.code).filter(Boolean))];
+
+    if (!codes.length) {
+      list.innerHTML = '';
+      wrap.classList.add('hidden');
+      return;
+    }
+
+    list.innerHTML = codes.map(code => `
+      <span class="inline-block text-white bg-green-600 rounded-md px-2 py-0.5 whitespace-nowrap"
+            style="font-family: ui-monospace, monospace; font-size: 0.6rem; letter-spacing: 0.03em;">
+        ✓ ${escapeHtml(code)}
+      </span>
+    `).join('');
+    wrap.classList.remove('hidden');
+  }
+
+
+  // ══════════════════════════════════════════════════════════
+  // COMPLIANCE PASSPORT — printable certificate export
+  //
+  // Populates the certificate with the latest audit metadata and
+  // fades the modal in (mirrors the parser-sandbox entrance).
+  // ══════════════════════════════════════════════════════════
+  function openPassport() {
+    // Fill in the certificate metadata rows
+    document.getElementById('passport-doc').textContent  = auditDocName || 'Pasted Document';
+    document.getElementById('passport-time').textContent =
+      (auditTimestamp || new Date()).toLocaleString();
+    document.getElementById('passport-peak').textContent =
+      Math.max(auditPeakViolations, 0);
+
+    // Pull every distinct regulatory code resolved/overridden this session
+    // from the audit trail and render them as compact code-tag badges.
+    renderPassportCodes();
+
+    const modal = document.getElementById('passport-modal');
+    const card  = document.getElementById('passport-card');
+    modal.classList.remove('pointer-events-none');
+    // Double rAF so the browser registers the starting state before fading in
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0');
+      card.classList.remove('scale-95');
+    }));
+
+    showToast('🎫 Compliance Passport issued — 100% Safe Pass!', 'success');
+  }
+
+  function closePassport() {
+    const modal = document.getElementById('passport-modal');
+    const card  = document.getElementById('passport-card');
+    modal.classList.add('opacity-0');
+    card.classList.add('scale-95');
+    setTimeout(() => modal.classList.add('pointer-events-none'), 300);
+  }
+
+
+  // ══════════════════════════════════════════════════════════
   // INITIALISATION — runs once when the DOM is ready
   // ══════════════════════════════════════════════════════════
   document.addEventListener('DOMContentLoaded', () => {
@@ -1430,6 +3098,70 @@
     // Default to the Marketing role so the sample text in the
     // textarea triggers visible red/yellow flags immediately on first scan
     setActiveRole('marketing', false);
+
+    // Initialise the multi-page state machine on the Intake step
+    updateStepTracker();
+
+    // First-time visitors get the guided onboarding tour; returning
+    // users (flag in localStorage) go straight to the concise app.
+    if (!hasOnboarded()) {
+      showWelcome();
+    }
+
+    // ── Wire up the file drop zone + hidden picker ──
+    const dropZone  = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('file-input');
+
+    if (dropZone && fileInput) {
+      // Clicking anywhere in the zone opens the native file picker
+      dropZone.addEventListener('click', () => fileInput.click());
+
+      // Drag-and-drop visual feedback + handling
+      dropZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dropZone.classList.add('drag-over');
+      });
+      dropZone.addEventListener('dragleave', () => {
+        dropZone.classList.remove('drag-over');
+      });
+      dropZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dropZone.classList.remove('drag-over');
+        handleFileSelection(e.dataTransfer && e.dataTransfer.files);
+      });
+
+      // Native picker selection
+      fileInput.addEventListener('change', e => {
+        handleFileSelection(e.target.files);
+        e.target.value = ''; // allow re-selecting the same file later
+      });
+    }
+
+    // ── Wire up the Custom Compliance Dictionary drop zone ──
+    const dictZone  = document.getElementById('dict-drop-zone');
+    const dictInput = document.getElementById('dict-input');
+
+    if (dictZone && dictInput) {
+      dictZone.addEventListener('click', () => dictInput.click());
+
+      dictZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        dictZone.classList.add('drag-over');
+      });
+      dictZone.addEventListener('dragleave', () => {
+        dictZone.classList.remove('drag-over');
+      });
+      dictZone.addEventListener('drop', e => {
+        e.preventDefault();
+        dictZone.classList.remove('drag-over');
+        handleDictionaryFile(e.dataTransfer && e.dataTransfer.files);
+      });
+
+      dictInput.addEventListener('change', e => {
+        handleDictionaryFile(e.target.files);
+        e.target.value = ''; // allow re-selecting the same file later
+      });
+    }
   });
 
 
